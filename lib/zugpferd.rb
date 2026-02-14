@@ -11,6 +11,7 @@ require_relative "zugpferd/model/tax_subtotal"
 require_relative "zugpferd/model/payment_instructions"
 require_relative "zugpferd/ubl/reader"
 require_relative "zugpferd/ubl/writer"
+require_relative "zugpferd/cii/reader"
 require_relative "zugpferd/validation/schema_validator"
 require_relative "zugpferd/validation/schematron_validator"
 
