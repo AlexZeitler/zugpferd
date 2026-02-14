@@ -83,10 +83,21 @@ module Zugpferd
         means_node = root.at_xpath(PAYMENT_MEANS, NS)
         return nil unless means_node
 
+        # BT-90: In UBL, creditor reference is a PartyIdentification with schemeID="SEPA" on the seller
+        creditor_ref = root.at_xpath(
+          "#{SELLER}/cac:PartyIdentification/cbc:ID[@schemeID='SEPA']", NS
+        )&.text
+
         Model::PaymentInstructions.new(
           payment_means_code: text(means_node, PAYMENT[:payment_means_code]),
           payment_id: text(means_node, PAYMENT[:payment_id]),
           account_id: text(means_node, PAYMENT[:account_id]),
+          card_account_id: text(means_node, PAYMENT[:card_account_id]),
+          card_network_id: text(means_node, PAYMENT[:card_network_id]),
+          card_holder_name: text(means_node, PAYMENT[:card_holder_name]),
+          mandate_reference: text(means_node, PAYMENT[:mandate_reference]),
+          debited_account_id: text(means_node, PAYMENT[:debited_account_id]),
+          creditor_reference_id: creditor_ref,
           note: text(root, PAYMENT_TERMS_NOTE),
         )
       end

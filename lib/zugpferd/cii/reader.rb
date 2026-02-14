@@ -90,6 +90,11 @@ module Zugpferd
           payment_means_code: text(means_node, PAYMENT[:payment_means_code]),
           payment_id: text(settlement_node, PAYMENT_REFERENCE),
           account_id: text(means_node, PAYMENT[:account_id]),
+          card_account_id: text(means_node, PAYMENT[:card_account_id]),
+          card_holder_name: text(means_node, PAYMENT[:card_holder_name]),
+          debited_account_id: text(means_node, PAYMENT[:debited_account_id]),
+          creditor_reference_id: text(settlement_node, CREDITOR_REFERENCE_ID),
+          mandate_reference: text(settlement_node, PAYMENT_TERMS_MANDATE),
           note: text(settlement_node, PAYMENT_TERMS_NOTE),
         )
       end

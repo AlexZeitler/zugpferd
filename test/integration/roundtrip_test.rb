@@ -3,7 +3,6 @@ require "test_helper"
 class UBLRoundtripTest < Minitest::Test
   include ValidatorHelper
 
-  # Fixtures that fail due to missing optional fields (Step 7)
   SKIP_UBL = {}.freeze
 
   def setup
@@ -27,7 +26,8 @@ class UBLRoundtripTest < Minitest::Test
       xml = File.read(fixture)
       invoice = Zugpferd::UBL::Reader.new.read(xml)
       output = Zugpferd::UBL::Writer.new.write(invoice)
-      errors = schematron_validator.validate(output, rule_set: :cen_ubl)
+      errors = schematron_validator.validate_all(output,
+        rule_sets: [:cen_ubl, :xrechnung_ubl])
       fatals = errors.select { |e| e.flag == "fatal" }
 
       assert_empty fatals,
@@ -40,7 +40,6 @@ end
 class CIIRoundtripTest < Minitest::Test
   include ValidatorHelper
 
-  # Fixtures that fail due to missing optional fields (Step 7)
   SKIP_CII = {}.freeze
 
   def setup
@@ -64,7 +63,8 @@ class CIIRoundtripTest < Minitest::Test
       xml = File.read(fixture)
       invoice = Zugpferd::CII::Reader.new.read(xml)
       output = Zugpferd::CII::Writer.new.write(invoice)
-      errors = schematron_validator.validate(output, rule_set: :cen_cii)
+      errors = schematron_validator.validate_all(output,
+        rule_sets: [:cen_cii, :xrechnung_cii])
       fatals = errors.select { |e| e.flag == "fatal" }
 
       assert_empty fatals,

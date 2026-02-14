@@ -59,6 +59,11 @@ module Zugpferd
         payment_means_code: "cbc:PaymentMeansCode",
         payment_id:         "cbc:PaymentID",
         account_id:         "cac:PayeeFinancialAccount/cbc:ID",
+        card_account_id:    "cac:CardAccount/cbc:PrimaryAccountNumberID",
+        card_network_id:    "cac:CardAccount/cbc:NetworkID",
+        card_holder_name:   "cac:CardAccount/cbc:HolderName",
+        mandate_reference:  "cac:PaymentMandate/cbc:ID",
+        debited_account_id: "cac:PaymentMandate/cac:PayerFinancialAccount/cbc:ID",
       }.freeze
       PAYMENT_TERMS_NOTE = "cac:PaymentTerms/cbc:Note"
 

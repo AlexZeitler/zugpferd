@@ -70,10 +70,15 @@ module Zugpferd
       PAYMENT = {
         payment_means_code: "ram:TypeCode",
         account_id:         "ram:PayeePartyCreditorFinancialAccount/ram:IBANID",
+        card_account_id:    "ram:ApplicableTradeSettlementFinancialCard/ram:ID",
+        card_holder_name:   "ram:ApplicableTradeSettlementFinancialCard/ram:CardholderName",
+        debited_account_id: "ram:PayerPartyDebtorFinancialAccount/ram:IBANID",
       }.freeze
+      CREDITOR_REFERENCE_ID = "ram:CreditorReferenceID"
       PAYMENT_REFERENCE = "ram:PaymentReference"
       PAYMENT_TERMS_NOTE = "ram:SpecifiedTradePaymentTerms/ram:Description"
       PAYMENT_TERMS_DUE_DATE = "ram:SpecifiedTradePaymentTerms/ram:DueDateDateTime/udt:DateTimeString"
+      PAYMENT_TERMS_MANDATE = "ram:SpecifiedTradePaymentTerms/ram:DirectDebitMandateID"
 
       # TaxTotal (BG-23)
       TAX_SUBTOTAL = "ram:ApplicableTradeTax"

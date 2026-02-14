@@ -135,6 +135,10 @@ module Zugpferd
 
       def build_settlement(xml, inv)
         xml["ram"].ApplicableHeaderTradeSettlement do
+          if inv.payment_instructions&.creditor_reference_id
+            xml["ram"].CreditorReferenceID inv.payment_instructions.creditor_reference_id
+          end
+
           if inv.payment_instructions&.payment_id
             xml["ram"].PaymentReference inv.payment_instructions.payment_id
           end
@@ -151,7 +155,7 @@ module Zugpferd
 
           inv.allowance_charges.each { |ac| build_allowance_charge(xml, ac) }
 
-          if inv.payment_instructions&.note || inv.due_date
+          if inv.payment_instructions&.note || inv.due_date || inv.payment_instructions&.mandate_reference
             xml["ram"].SpecifiedTradePaymentTerms do
               xml["ram"].Description inv.payment_instructions.note if inv.payment_instructions&.note
               if inv.due_date
@@ -159,6 +163,7 @@ module Zugpferd
                   xml["udt"].DateTimeString(format_cii_date(inv.due_date), format: "102")
                 end
               end
+              xml["ram"].DirectDebitMandateID inv.payment_instructions.mandate_reference if inv.payment_instructions&.mandate_reference
             end
           end
 
@@ -169,6 +174,17 @@ module Zugpferd
       def build_payment_means(xml, payment)
         xml["ram"].SpecifiedTradeSettlementPaymentMeans do
           xml["ram"].TypeCode payment.payment_means_code
+          if payment.card_account_id
+            xml["ram"].ApplicableTradeSettlementFinancialCard do
+              xml["ram"].ID payment.card_account_id
+              xml["ram"].CardholderName payment.card_holder_name if payment.card_holder_name
+            end
+          end
+          if payment.debited_account_id
+            xml["ram"].PayerPartyDebtorFinancialAccount do
+              xml["ram"].IBANID payment.debited_account_id
+            end
+          end
           if payment.account_id
             xml["ram"].PayeePartyCreditorFinancialAccount do
               xml["ram"].IBANID payment.account_id

@@ -10,6 +10,8 @@ module Zugpferd
       XSLT_PATHS = {
         cen_ubl: "schematron/cen/ubl/xslt/EN16931-UBL-validation.xslt",
         cen_cii: "schematron/cen/cii/xslt/EN16931-CII-validation.xslt",
+        xrechnung_ubl: "schematron/xrechnung/schematron/ubl/XRechnung-UBL-validation.xsl",
+        xrechnung_cii: "schematron/xrechnung/schematron/cii/XRechnung-CII-validation.xsl",
       }.freeze
 
       SAXON_JARS = [

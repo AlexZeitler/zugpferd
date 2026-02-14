@@ -30,7 +30,7 @@ module Zugpferd
         xml["cbc"].DocumentCurrencyCode inv.currency_code
         xml["cbc"].BuyerReference inv.buyer_reference if inv.buyer_reference
 
-        build_supplier(xml, inv.seller) if inv.seller
+        build_supplier(xml, inv.seller, inv.payment_instructions) if inv.seller
         build_customer(xml, inv.buyer) if inv.buyer
         build_payment_means(xml, inv.payment_instructions) if inv.payment_instructions
         build_payment_terms(xml, inv.payment_instructions) if inv.payment_instructions&.note
@@ -40,9 +40,10 @@ module Zugpferd
         inv.line_items.each { |li| build_invoice_line(xml, li, inv.currency_code) }
       end
 
-      def build_supplier(xml, party)
+      def build_supplier(xml, party, payment_instructions = nil)
         xml["cac"].AccountingSupplierParty do
-          build_party(xml, party)
+          build_party(xml, party,
+            creditor_reference_id: payment_instructions&.creditor_reference_id)
         end
       end
 
@@ -52,7 +53,7 @@ module Zugpferd
         end
       end
 
-      def build_party(xml, party)
+      def build_party(xml, party, creditor_reference_id: nil)
         xml["cac"].Party do
           if party.electronic_address
             attrs = {}
@@ -63,6 +64,12 @@ module Zugpferd
           if party.identifier
             xml["cac"].PartyIdentification do
               xml["cbc"].ID party.identifier
+            end
+          end
+
+          if creditor_reference_id
+            xml["cac"].PartyIdentification do
+              xml["cbc"].ID(creditor_reference_id, schemeID: "SEPA")
             end
           end
 
@@ -116,9 +123,26 @@ module Zugpferd
         xml["cac"].PaymentMeans do
           xml["cbc"].PaymentMeansCode payment.payment_means_code
           xml["cbc"].PaymentID payment.payment_id if payment.payment_id
+          if payment.card_account_id
+            xml["cac"].CardAccount do
+              xml["cbc"].PrimaryAccountNumberID payment.card_account_id
+              xml["cbc"].NetworkID(payment.card_network_id || "mapped-from-cii")
+              xml["cbc"].HolderName payment.card_holder_name if payment.card_holder_name
+            end
+          end
           if payment.account_id
             xml["cac"].PayeeFinancialAccount do
               xml["cbc"].ID payment.account_id
+            end
+          end
+          if payment.mandate_reference
+            xml["cac"].PaymentMandate do
+              xml["cbc"].ID payment.mandate_reference
+              if payment.debited_account_id
+                xml["cac"].PayerFinancialAccount do
+                  xml["cbc"].ID payment.debited_account_id
+                end
+              end
             end
           end
         end
