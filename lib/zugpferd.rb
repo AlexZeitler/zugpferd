@@ -9,6 +9,7 @@ require_relative "zugpferd/model/monetary_totals"
 require_relative "zugpferd/model/tax_breakdown"
 require_relative "zugpferd/model/tax_subtotal"
 require_relative "zugpferd/model/payment_instructions"
+require_relative "zugpferd/ubl/reader"
 require_relative "zugpferd/validation/schema_validator"
 require_relative "zugpferd/validation/schematron_validator"
 
