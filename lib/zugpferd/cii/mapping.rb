@@ -73,24 +73,44 @@ module Zugpferd
       }.freeze
       PAYMENT_REFERENCE = "ram:PaymentReference"
       PAYMENT_TERMS_NOTE = "ram:SpecifiedTradePaymentTerms/ram:Description"
+      PAYMENT_TERMS_DUE_DATE = "ram:SpecifiedTradePaymentTerms/ram:DueDateDateTime/udt:DateTimeString"
 
       # TaxTotal (BG-23)
       TAX_SUBTOTAL = "ram:ApplicableTradeTax"
       TAX = {
-        taxable_amount: "ram:BasisAmount",
-        tax_amount:     "ram:CalculatedAmount",
-        category_code:  "ram:CategoryCode",
-        percent:        "ram:RateApplicablePercent",
+        taxable_amount:        "ram:BasisAmount",
+        tax_amount:            "ram:CalculatedAmount",
+        category_code:         "ram:CategoryCode",
+        percent:               "ram:RateApplicablePercent",
+        exemption_reason:      "ram:ExemptionReason",
+        exemption_reason_code: "ram:ExemptionReasonCode",
       }.freeze
 
       # LegalMonetaryTotal (BG-22)
       MONETARY_TOTAL = "ram:SpecifiedTradeSettlementHeaderMonetarySummation"
       TOTALS = {
-        line_extension_amount: "ram:LineTotalAmount",
-        tax_exclusive_amount:  "ram:TaxBasisTotalAmount",
-        tax_inclusive_amount:  "ram:GrandTotalAmount",
-        payable_amount:        "ram:DuePayableAmount",
-        tax_total_amount:      "ram:TaxTotalAmount",
+        line_extension_amount:  "ram:LineTotalAmount",
+        tax_exclusive_amount:   "ram:TaxBasisTotalAmount",
+        tax_inclusive_amount:    "ram:GrandTotalAmount",
+        prepaid_amount:          "ram:TotalPrepaidAmount",
+        payable_rounding_amount: "ram:RoundingAmount",
+        payable_amount:          "ram:DuePayableAmount",
+        tax_total_amount:        "ram:TaxTotalAmount",
+        allowance_total_amount:  "ram:AllowanceTotalAmount",
+        charge_total_amount:     "ram:ChargeTotalAmount",
+      }.freeze
+
+      # AllowanceCharge (BG-20 / BG-21)
+      ALLOWANCE_CHARGE = "ram:SpecifiedTradeAllowanceCharge"
+      ALLOWANCE_CHARGE_FIELDS = {
+        charge_indicator: "ram:ChargeIndicator/udt:Indicator",
+        reason:           "ram:Reason",
+        reason_code:      "ram:ReasonCode",
+        amount:           "ram:ActualAmount",
+        base_amount:      "ram:BasisAmount",
+        multiplier_factor: "ram:CalculationPercent",
+        tax_category_code: "ram:CategoryTradeTax/ram:CategoryCode",
+        tax_percent:       "ram:CategoryTradeTax/ram:RateApplicablePercent",
       }.freeze
 
       # InvoiceLine (BG-25)

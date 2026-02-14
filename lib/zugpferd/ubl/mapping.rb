@@ -11,6 +11,7 @@ module Zugpferd
       INVOICE = {
         number:             "cbc:ID",
         issue_date:         "cbc:IssueDate",
+        due_date:           "cbc:DueDate",
         type_code:          "cbc:InvoiceTypeCode",
         currency_code:      "cbc:DocumentCurrencyCode",
         buyer_reference:    "cbc:BuyerReference",
@@ -65,19 +66,38 @@ module Zugpferd
       TAX_TOTAL = "cac:TaxTotal"
       TAX_SUBTOTAL = "cac:TaxSubtotal"
       TAX = {
-        taxable_amount: "cbc:TaxableAmount",
-        tax_amount:     "cbc:TaxAmount",
-        category_code:  "cac:TaxCategory/cbc:ID",
-        percent:        "cac:TaxCategory/cbc:Percent",
+        taxable_amount:        "cbc:TaxableAmount",
+        tax_amount:            "cbc:TaxAmount",
+        category_code:         "cac:TaxCategory/cbc:ID",
+        percent:               "cac:TaxCategory/cbc:Percent",
+        exemption_reason:      "cac:TaxCategory/cbc:TaxExemptionReason",
+        exemption_reason_code: "cac:TaxCategory/cbc:TaxExemptionReasonCode",
       }.freeze
 
       # LegalMonetaryTotal (BG-22)
       MONETARY_TOTAL = "cac:LegalMonetaryTotal"
       TOTALS = {
-        line_extension_amount: "cbc:LineExtensionAmount",
-        tax_exclusive_amount:  "cbc:TaxExclusiveAmount",
-        tax_inclusive_amount:  "cbc:TaxInclusiveAmount",
-        payable_amount:        "cbc:PayableAmount",
+        line_extension_amount:  "cbc:LineExtensionAmount",
+        tax_exclusive_amount:   "cbc:TaxExclusiveAmount",
+        tax_inclusive_amount:    "cbc:TaxInclusiveAmount",
+        prepaid_amount:          "cbc:PrepaidAmount",
+        payable_rounding_amount: "cbc:PayableRoundingAmount",
+        allowance_total_amount:  "cbc:AllowanceTotalAmount",
+        charge_total_amount:     "cbc:ChargeTotalAmount",
+        payable_amount:          "cbc:PayableAmount",
+      }.freeze
+
+      # AllowanceCharge (BG-20 / BG-21)
+      ALLOWANCE_CHARGE = "cac:AllowanceCharge"
+      ALLOWANCE_CHARGE_FIELDS = {
+        charge_indicator: "cbc:ChargeIndicator",
+        reason:           "cbc:AllowanceChargeReason",
+        reason_code:      "cbc:AllowanceChargeReasonCode",
+        amount:           "cbc:Amount",
+        base_amount:      "cbc:BaseAmount",
+        multiplier_factor: "cbc:MultiplierFactorNumeric",
+        tax_category_code: "cac:TaxCategory/cbc:ID",
+        tax_percent:       "cac:TaxCategory/cbc:Percent",
       }.freeze
 
       # InvoiceLine (BG-25)

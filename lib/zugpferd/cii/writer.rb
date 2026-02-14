@@ -149,9 +149,16 @@ module Zugpferd
             end
           end
 
-          if inv.payment_instructions&.note
+          inv.allowance_charges.each { |ac| build_allowance_charge(xml, ac) }
+
+          if inv.payment_instructions&.note || inv.due_date
             xml["ram"].SpecifiedTradePaymentTerms do
-              xml["ram"].Description inv.payment_instructions.note
+              xml["ram"].Description inv.payment_instructions.note if inv.payment_instructions&.note
+              if inv.due_date
+                xml["ram"].DueDateDateTime do
+                  xml["udt"].DateTimeString(format_cii_date(inv.due_date), format: "102")
+                end
+              end
             end
           end
 
@@ -174,8 +181,10 @@ module Zugpferd
         xml["ram"].ApplicableTradeTax do
           xml["ram"].CalculatedAmount format_decimal(sub.tax_amount)
           xml["ram"].TypeCode "VAT"
+          xml["ram"].ExemptionReason sub.exemption_reason if sub.exemption_reason
           xml["ram"].BasisAmount format_decimal(sub.taxable_amount)
           xml["ram"].CategoryCode sub.category_code
+          xml["ram"].ExemptionReasonCode sub.exemption_reason_code if sub.exemption_reason_code
           xml["ram"].RateApplicablePercent format_decimal(sub.percent) if sub.percent
         end
       end
@@ -183,13 +192,37 @@ module Zugpferd
       def build_monetary_total(xml, totals, tax_breakdown)
         xml["ram"].SpecifiedTradeSettlementHeaderMonetarySummation do
           xml["ram"].LineTotalAmount format_decimal(totals.line_extension_amount)
+          xml["ram"].ChargeTotalAmount format_decimal(totals.charge_total_amount) if totals.charge_total_amount
+          xml["ram"].AllowanceTotalAmount format_decimal(totals.allowance_total_amount) if totals.allowance_total_amount
           xml["ram"].TaxBasisTotalAmount format_decimal(totals.tax_exclusive_amount)
           if tax_breakdown
             xml["ram"].TaxTotalAmount(format_decimal(tax_breakdown.tax_amount),
                                       currencyID: tax_breakdown.currency_code)
           end
           xml["ram"].GrandTotalAmount format_decimal(totals.tax_inclusive_amount)
+          xml["ram"].RoundingAmount format_decimal(totals.payable_rounding_amount) if totals.payable_rounding_amount
+          xml["ram"].TotalPrepaidAmount format_decimal(totals.prepaid_amount) if totals.prepaid_amount
           xml["ram"].DuePayableAmount format_decimal(totals.payable_amount)
+        end
+      end
+
+      def build_allowance_charge(xml, ac)
+        xml["ram"].SpecifiedTradeAllowanceCharge do
+          xml["ram"].ChargeIndicator do
+            xml["udt"].Indicator ac.charge_indicator.to_s
+          end
+          xml["ram"].CalculationPercent format_decimal(ac.multiplier_factor) if ac.multiplier_factor
+          xml["ram"].BasisAmount format_decimal(ac.base_amount) if ac.base_amount
+          xml["ram"].ActualAmount format_decimal(ac.amount)
+          xml["ram"].ReasonCode ac.reason_code if ac.reason_code
+          xml["ram"].Reason ac.reason if ac.reason
+          if ac.tax_category_code
+            xml["ram"].CategoryTradeTax do
+              xml["ram"].TypeCode "VAT"
+              xml["ram"].CategoryCode ac.tax_category_code
+              xml["ram"].RateApplicablePercent format_decimal(ac.tax_percent) if ac.tax_percent
+            end
+          end
         end
       end
 

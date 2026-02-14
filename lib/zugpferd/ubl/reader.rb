@@ -20,6 +20,7 @@ module Zugpferd
         Model::Invoice.new(
           number: text(root, INVOICE[:number]),
           issue_date: parse_date(text(root, INVOICE[:issue_date])),
+          due_date: parse_date(text(root, INVOICE[:due_date])),
           type_code: text(root, INVOICE[:type_code]),
           currency_code: text(root, INVOICE[:currency_code]),
           buyer_reference: text(root, INVOICE[:buyer_reference]),
@@ -29,6 +30,7 @@ module Zugpferd
           seller: build_party(root.at_xpath(SELLER, NS)),
           buyer: build_party(root.at_xpath(BUYER, NS)),
           line_items: root.xpath(INVOICE_LINE, NS).map { |n| build_line_item(n) },
+          allowance_charges: root.xpath(ALLOWANCE_CHARGE, NS).map { |n| build_allowance_charge(n) },
           tax_breakdown: build_tax_breakdown(root.at_xpath(TAX_TOTAL, NS)),
           monetary_totals: build_monetary_totals(root.at_xpath(MONETARY_TOTAL, NS)),
           payment_instructions: build_payment_instructions(root),
@@ -107,6 +109,8 @@ module Zugpferd
             category_code: text(sub, TAX[:category_code]),
             percent: parse_decimal(text(sub, TAX[:percent])),
             currency_code: sub_currency,
+            exemption_reason: text(sub, TAX[:exemption_reason]),
+            exemption_reason_code: text(sub, TAX[:exemption_reason_code]),
           )
         end
 
@@ -120,6 +124,10 @@ module Zugpferd
           line_extension_amount: text(node, TOTALS[:line_extension_amount]),
           tax_exclusive_amount: text(node, TOTALS[:tax_exclusive_amount]),
           tax_inclusive_amount: text(node, TOTALS[:tax_inclusive_amount]),
+          prepaid_amount: parse_decimal(text(node, TOTALS[:prepaid_amount])),
+          payable_rounding_amount: parse_decimal(text(node, TOTALS[:payable_rounding_amount])),
+          allowance_total_amount: parse_decimal(text(node, TOTALS[:allowance_total_amount])),
+          charge_total_amount: parse_decimal(text(node, TOTALS[:charge_total_amount])),
           payable_amount: text(node, TOTALS[:payable_amount]),
         )
       end
@@ -156,6 +164,21 @@ module Zugpferd
 
         Model::Price.new(
           amount: text(node, PRICE_FIELDS[:amount]),
+        )
+      end
+
+      def build_allowance_charge(node)
+        currency = node.at_xpath("cbc:Amount/@currencyID", NS)&.text
+        Model::AllowanceCharge.new(
+          charge_indicator: text(node, ALLOWANCE_CHARGE_FIELDS[:charge_indicator]) == "true",
+          reason: text(node, ALLOWANCE_CHARGE_FIELDS[:reason]),
+          reason_code: text(node, ALLOWANCE_CHARGE_FIELDS[:reason_code]),
+          amount: text(node, ALLOWANCE_CHARGE_FIELDS[:amount]),
+          base_amount: parse_decimal(text(node, ALLOWANCE_CHARGE_FIELDS[:base_amount])),
+          multiplier_factor: parse_decimal(text(node, ALLOWANCE_CHARGE_FIELDS[:multiplier_factor])),
+          tax_category_code: text(node, ALLOWANCE_CHARGE_FIELDS[:tax_category_code]),
+          tax_percent: parse_decimal(text(node, ALLOWANCE_CHARGE_FIELDS[:tax_percent])),
+          currency_code: currency,
         )
       end
 

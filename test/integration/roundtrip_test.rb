@@ -4,24 +4,7 @@ class UBLRoundtripTest < Minitest::Test
   include ValidatorHelper
 
   # Fixtures that fail due to missing optional fields (Step 7)
-  SKIP_UBL = {
-    "01.04a-INVOICE_ubl" => "BR-O-10: VAT exemption reason BT-120/121",
-    "01.09a-INVOICE_ubl" => "BR-CO-25: payment due date BT-9",
-    "01.11a-INVOICE_ubl" => "BR-CO-25: payment due date BT-9",
-    "01.12a-INVOICE_ubl" => "BR-CO-25: payment due date BT-9",
-    "01.14a-INVOICE_ubl" => "BR-CO-25: payment due date BT-9",
-    "01.17a-INVOICE_ubl" => "BR-CO-16: rounding amount BT-114",
-    "01.21a-INVOICE_ubl" => "BR-AE-10, BR-CO-13: allowances/charges + exemption reason",
-    "02.01a-INVOICE_ubl" => "BR-E-10: VAT exemption reason BT-120/121",
-    "02.02a-INVOICE_ubl" => "BR-E-10: VAT exemption reason BT-120/121",
-    "02.03a-INVOICE_ubl" => "BR-E-10, BR-CO-16: exemption reason + paid amount BT-113",
-    "02.04a-INVOICE_ubl" => "BR-E-10: VAT exemption reason BT-120/121",
-    "02.05a-INVOICE_ubl" => "BR-S-08, BR-CO-13: allowances/charges",
-    "03.01a-INVOICE_ubl" => "BR-CO-16: paid amount BT-113",
-    "03.04a-INVOICE_ubl" => "BR-CO-16: paid amount BT-113",
-    "03.06a-INVOICE_ubl" => "BR-CO-25: payment due date BT-9",
-    "03.07a-INVOICE_ubl" => "BR-E-10: VAT exemption reason BT-120/121",
-  }.freeze
+  SKIP_UBL = {}.freeze
 
   def setup
     skip "Testsuite not available" unless testsuite_available?
@@ -58,24 +41,7 @@ class CIIRoundtripTest < Minitest::Test
   include ValidatorHelper
 
   # Fixtures that fail due to missing optional fields (Step 7)
-  SKIP_CII = {
-    "01.04a-INVOICE_uncefact" => "BR-O-10: VAT exemption reason BT-120/121",
-    "01.09a-INVOICE_uncefact" => "BR-CO-25: payment due date BT-9",
-    "01.11a-INVOICE_uncefact" => "BR-CO-25: payment due date BT-9",
-    "01.12a-INVOICE_uncefact" => "BR-CO-25: payment due date BT-9",
-    "01.14a-INVOICE_uncefact" => "BR-CO-25: payment due date BT-9",
-    "01.17a-INVOICE_uncefact" => "BR-CO-16: rounding amount BT-114",
-    "01.21a-INVOICE_uncefact" => "BR-AE-10, BR-CO-13: allowances/charges + exemption reason",
-    "02.01a-INVOICE_uncefact" => "BR-E-10: VAT exemption reason BT-120/121",
-    "02.02a-INVOICE_uncefact" => "BR-E-10: VAT exemption reason BT-120/121",
-    "02.03a-INVOICE_uncefact" => "BR-E-10, BR-CO-16: exemption reason + paid amount BT-113",
-    "02.04a-INVOICE_uncefact" => "BR-E-10: VAT exemption reason BT-120/121",
-    "02.05a-INVOICE_uncefact" => "BR-S-08, BR-CO-13: allowances/charges",
-    "03.01a-INVOICE_uncefact" => "BR-CO-16: paid amount BT-113",
-    "03.04a-INVOICE_uncefact" => "BR-CO-16: paid amount BT-113",
-    "03.06a-INVOICE_uncefact" => "BR-CO-25: payment due date BT-9",
-    "03.07a-INVOICE_uncefact" => "BR-E-10: VAT exemption reason BT-120/121",
-  }.freeze
+  SKIP_CII = {}.freeze
 
   def setup
     skip "Testsuite not available" unless testsuite_available?

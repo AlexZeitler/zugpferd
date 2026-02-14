@@ -24,6 +24,7 @@ module Zugpferd
         xml["cbc"].ProfileID inv.profile_id if inv.profile_id
         xml["cbc"].ID inv.number
         xml["cbc"].IssueDate inv.issue_date.to_s
+        xml["cbc"].DueDate inv.due_date.to_s if inv.due_date
         xml["cbc"].InvoiceTypeCode inv.type_code
         xml["cbc"].Note inv.note if inv.note
         xml["cbc"].DocumentCurrencyCode inv.currency_code
@@ -33,6 +34,7 @@ module Zugpferd
         build_customer(xml, inv.buyer) if inv.buyer
         build_payment_means(xml, inv.payment_instructions) if inv.payment_instructions
         build_payment_terms(xml, inv.payment_instructions) if inv.payment_instructions&.note
+        inv.allowance_charges.each { |ac| build_allowance_charge(xml, ac, inv.currency_code) }
         build_tax_total(xml, inv.tax_breakdown) if inv.tax_breakdown
         build_monetary_total(xml, inv.monetary_totals, inv.currency_code) if inv.monetary_totals
         inv.line_items.each { |li| build_invoice_line(xml, li, inv.currency_code) }
@@ -141,6 +143,8 @@ module Zugpferd
               xml["cac"].TaxCategory do
                 xml["cbc"].ID sub.category_code
                 xml["cbc"].Percent format_decimal(sub.percent) if sub.percent
+                xml["cbc"].TaxExemptionReasonCode sub.exemption_reason_code if sub.exemption_reason_code
+                xml["cbc"].TaxExemptionReason sub.exemption_reason if sub.exemption_reason
                 xml["cac"].TaxScheme do
                   xml["cbc"].ID "VAT"
                 end
@@ -158,8 +162,44 @@ module Zugpferd
                                         currencyID: currency_code)
           xml["cbc"].TaxInclusiveAmount(format_decimal(totals.tax_inclusive_amount),
                                         currencyID: currency_code)
+          if totals.allowance_total_amount
+            xml["cbc"].AllowanceTotalAmount(format_decimal(totals.allowance_total_amount),
+                                            currencyID: currency_code)
+          end
+          if totals.charge_total_amount
+            xml["cbc"].ChargeTotalAmount(format_decimal(totals.charge_total_amount),
+                                          currencyID: currency_code)
+          end
+          if totals.prepaid_amount
+            xml["cbc"].PrepaidAmount(format_decimal(totals.prepaid_amount),
+                                     currencyID: currency_code)
+          end
+          if totals.payable_rounding_amount
+            xml["cbc"].PayableRoundingAmount(format_decimal(totals.payable_rounding_amount),
+                                              currencyID: currency_code)
+          end
           xml["cbc"].PayableAmount(format_decimal(totals.payable_amount),
                                    currencyID: currency_code)
+        end
+      end
+
+      def build_allowance_charge(xml, ac, currency_code)
+        xml["cac"].AllowanceCharge do
+          xml["cbc"].ChargeIndicator ac.charge_indicator.to_s
+          xml["cbc"].AllowanceChargeReasonCode ac.reason_code if ac.reason_code
+          xml["cbc"].AllowanceChargeReason ac.reason if ac.reason
+          xml["cbc"].MultiplierFactorNumeric format_decimal(ac.multiplier_factor) if ac.multiplier_factor
+          xml["cbc"].Amount(format_decimal(ac.amount), currencyID: currency_code)
+          xml["cbc"].BaseAmount(format_decimal(ac.base_amount), currencyID: currency_code) if ac.base_amount
+          if ac.tax_category_code
+            xml["cac"].TaxCategory do
+              xml["cbc"].ID ac.tax_category_code
+              xml["cbc"].Percent format_decimal(ac.tax_percent) if ac.tax_percent
+              xml["cac"].TaxScheme do
+                xml["cbc"].ID "VAT"
+              end
+            end
+          end
         end
       end
 
