@@ -1,0 +1,8 @@
+vendor/testsuite/
+.bundle/
+Gemfile.lock
+pkg/
+*.gem
+.nvim.lua
+.exrc
+tags

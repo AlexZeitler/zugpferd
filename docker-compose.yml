@@ -1,0 +1,13 @@
+services:
+  test:
+    build: .
+    volumes:
+      - .:/app
+      - bundle_cache:/usr/local/bundle
+    environment:
+      - XRECHNUNG_TESTSUITE_PATH=/app/vendor/testsuite
+    tmpfs:
+      - /tmp
+
+volumes:
+  bundle_cache:

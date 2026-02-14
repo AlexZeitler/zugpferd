@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+VENDOR_DIR="$(cd "$(dirname "$0")/../vendor" && pwd)"
+
+echo "==> Downloading XRechnung test suite..."
+if [ ! -d "$VENDOR_DIR/testsuite" ]; then
+  git clone --depth 1 \
+    https://github.com/itplr-kosit/xrechnung-testsuite.git \
+    "$VENDOR_DIR/testsuite"
+else
+  cd "$VENDOR_DIR/testsuite" && git pull --ff-only
+fi
+echo "    OK"
+
+echo ""
+echo "All artifacts ready in: $VENDOR_DIR"
