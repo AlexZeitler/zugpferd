@@ -1,0 +1,43 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4fc3f7"/>
+      <stop offset="100%" style="stop-color:#29b6f6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Accent line top -->
+  <rect x="0" y="0" width="1200" height="4" fill="url(#accent)"/>
+
+  <!-- XML bracket decoration left -->
+  <text x="80" y="340" font-family="monospace" font-size="200" fill="#4fc3f7" opacity="0.08">&lt;/&gt;</text>
+
+  <!-- Title -->
+  <text x="600" y="240" font-family="system-ui, -apple-system, sans-serif" font-size="96" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="-2">Zugpferd</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="32" fill="#90caf9" text-anchor="middle">EN 16931 E-Invoicing for Ruby</text>
+
+  <!-- Tags -->
+  <rect x="310" y="380" width="100" height="36" rx="18" fill="#4fc3f7" opacity="0.15"/>
+  <text x="360" y="404" font-family="monospace" font-size="16" fill="#4fc3f7" text-anchor="middle">UBL 2.1</text>
+
+  <rect x="430" y="380" width="80" height="36" rx="18" fill="#4fc3f7" opacity="0.15"/>
+  <text x="470" y="404" font-family="monospace" font-size="16" fill="#4fc3f7" text-anchor="middle">CII</text>
+
+  <rect x="530" y="380" width="130" height="36" rx="18" fill="#4fc3f7" opacity="0.15"/>
+  <text x="595" y="404" font-family="monospace" font-size="16" fill="#4fc3f7" text-anchor="middle">XRechnung</text>
+
+  <rect x="680" y="380" width="120" height="36" rx="18" fill="#4fc3f7" opacity="0.15"/>
+  <text x="740" y="404" font-family="monospace" font-size="16" fill="#4fc3f7" text-anchor="middle">ZUGFeRD</text>
+
+  <!-- Footer -->
+  <text x="600" y="560" font-family="monospace" font-size="20" fill="#546e7a" text-anchor="middle">github.com/alexzeitler/zugpferd</text>
+</svg>

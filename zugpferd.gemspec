@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.license       = "MIT"
   spec.required_ruby_version = ">= 3.2"
 
-  spec.files = Dir["lib/**/*.rb", "vendor/schemas/**/*"]
+  spec.files = Dir["lib/**/*.rb"] - Dir["lib/zugpferd/validation/**/*.rb"]
   spec.require_paths = ["lib"]
 
   spec.add_dependency "nokogiri", "~> 1.16"

@@ -2,15 +2,23 @@ require "bigdecimal"
 
 module Zugpferd
   module Model
+    # An invoice line (BG-25).
     class LineItem
-      attr_accessor :id,                  # BT-126
-                    :invoiced_quantity,    # BT-129
-                    :unit_code,           # BT-130
-                    :line_extension_amount, # BT-131
-                    :note,                # BT-127
-                    :item,                # BG-31 (Item)
-                    :price                # BG-29 (Price)
+      # @return [String] BT-126 Line identifier
+      # @return [BigDecimal] BT-129 Invoiced quantity
+      # @return [String] BT-130 Unit of measure code
+      # @return [BigDecimal] BT-131 Line extension amount
+      # @return [String, nil] BT-127 Invoice line note
+      # @return [Item, nil] BG-31 Item information
+      # @return [Price, nil] BG-29 Price details
+      attr_accessor :id, :invoiced_quantity, :unit_code,
+                    :line_extension_amount, :note, :item, :price
 
+      # @param id [String] BT-126 Line identifier
+      # @param invoiced_quantity [String, BigDecimal] BT-129 Quantity
+      # @param unit_code [String] BT-130 Unit of measure code
+      # @param line_extension_amount [String, BigDecimal] BT-131 Line total
+      # @param rest [Hash] additional attributes set via accessors
       def initialize(id:, invoiced_quantity:, unit_code:,
                      line_extension_amount:, **rest)
         @id = id

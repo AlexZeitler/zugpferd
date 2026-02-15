@@ -1,17 +1,25 @@
 module Zugpferd
   module Model
+    # Payment instructions (BG-16) including payment card (BG-18)
+    # and direct debit (BG-19) information.
     class PaymentInstructions
-      attr_accessor :payment_means_code,   # BT-81
-                    :payment_id,           # BT-83
-                    :account_id,           # BT-84
-                    :note,                 # BT-82 (PaymentTerms note)
-                    :card_account_id,      # BT-87
-                    :card_holder_name,     # BT-88
-                    :card_network_id,      # UBL-only (required in CardAccount)
-                    :mandate_reference,    # BT-89
-                    :creditor_reference_id, # BT-90
-                    :debited_account_id    # BT-91
+      # @return [String] BT-81 Payment means type code
+      # @return [String, nil] BT-83 Remittance information
+      # @return [String, nil] BT-84 Payment account identifier (IBAN)
+      # @return [String, nil] BT-82 Payment terms note
+      # @return [String, nil] BT-87 Payment card primary account number
+      # @return [String, nil] BT-88 Payment card holder name
+      # @return [String, nil] Card network ID (UBL-only, required in CardAccount)
+      # @return [String, nil] BT-89 Mandate reference identifier
+      # @return [String, nil] BT-90 Bank assigned creditor identifier
+      # @return [String, nil] BT-91 Debited account identifier
+      attr_accessor :payment_means_code, :payment_id, :account_id, :note,
+                    :card_account_id, :card_holder_name, :card_network_id,
+                    :mandate_reference, :creditor_reference_id,
+                    :debited_account_id
 
+      # @param payment_means_code [String] BT-81 Payment means type code
+      # @param rest [Hash] additional attributes set via accessors
       def initialize(payment_means_code:, **rest)
         @payment_means_code = payment_means_code
         rest.each { |k, v| public_send(:"#{k}=", v) }

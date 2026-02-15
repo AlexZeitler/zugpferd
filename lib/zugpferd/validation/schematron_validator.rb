@@ -4,6 +4,14 @@ require "tempfile"
 
 module Zugpferd
   module Validation
+    # Validates XML against Schematron business rules using Saxon HE.
+    #
+    # Supports CEN EN 16931 and XRechnung rule sets.
+    #
+    # @example
+    #   validator = SchematronValidator.new(schemas_path: "vendor/schemas")
+    #   errors = validator.validate(xml, rule_set: :xrechnung_ubl)
+    #   fatals = errors.select { |e| e.flag == "fatal" }
     class SchematronValidator
       SVRL_NS = "http://purl.oclc.org/dsdl/svrl"
 
@@ -23,10 +31,17 @@ module Zugpferd
 
       Result = Struct.new(:id, :location, :text, :flag, keyword_init: true)
 
+      # @param schemas_path [String] path to the schemas directory
       def initialize(schemas_path:)
         @schemas_path = schemas_path
       end
 
+      # Validates XML against a single Schematron rule set.
+      #
+      # @param xml_string [String] XML to validate
+      # @param rule_set [Symbol] one of +:cen_ubl+, +:cen_cii+, +:xrechnung_ubl+, +:xrechnung_cii+
+      # @return [Array<Result>] validation errors
+      # @raise [TransformError] if Saxon fails
       def validate(xml_string, rule_set:)
         xslt_path = resolve_xslt(rule_set)
         svrl_xml = run_saxon(xml_string, xslt_path)
@@ -34,6 +49,11 @@ module Zugpferd
         parse_failed_asserts(svrl_doc)
       end
 
+      # Validates XML against multiple rule sets.
+      #
+      # @param xml_string [String] XML to validate
+      # @param rule_sets [Array<Symbol>] rule sets to apply
+      # @return [Array<Result>] merged validation errors
       def validate_all(xml_string, rule_sets:)
         rule_sets.flat_map { |rs| validate(xml_string, rule_set: rs) }
       end

@@ -3,9 +3,17 @@ require_relative "mapping"
 
 module Zugpferd
   module UBL
+    # Writes {Model::Invoice} to UBL 2.1 Invoice XML.
+    #
+    # @example
+    #   xml = Zugpferd::UBL::Writer.new.write(invoice)
     class Writer
       include Mapping
 
+      # Serializes an invoice to UBL 2.1 XML.
+      #
+      # @param invoice [Model::Invoice] the invoice to serialize
+      # @return [String] UTF-8 encoded XML string
       def write(invoice)
         builder = Nokogiri::XML::Builder.new(encoding: "UTF-8") do |xml|
           xml.Invoice(xmlns: NS["ubl"],

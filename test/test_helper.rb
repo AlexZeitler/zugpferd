@@ -1,6 +1,8 @@
 require "bundler/setup"
 require "minitest/autorun"
 require "zugpferd"
+require "zugpferd/validation/schema_validator"
+require "zugpferd/validation/schematron_validator"
 require "nokogiri"
 
 Dir[File.join(__dir__, "support", "**", "*.rb")].each { |f| require f }

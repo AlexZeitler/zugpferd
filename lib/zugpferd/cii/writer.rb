@@ -3,9 +3,17 @@ require_relative "mapping"
 
 module Zugpferd
   module CII
+    # Writes {Model::Invoice} to UN/CEFACT CII CrossIndustryInvoice XML.
+    #
+    # @example
+    #   xml = Zugpferd::CII::Writer.new.write(invoice)
     class Writer
       include Mapping
 
+      # Serializes an invoice to CII D16B XML.
+      #
+      # @param invoice [Model::Invoice] the invoice to serialize
+      # @return [String] UTF-8 encoded XML string
       def write(invoice)
         builder = Nokogiri::XML::Builder.new(encoding: "UTF-8") do |xml|
           xml["rsm"].CrossIndustryInvoice(

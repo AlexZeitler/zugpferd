@@ -6,3 +6,8 @@ pkg/
 .nvim.lua
 .exrc
 tags
+doc/
+.yardoc/
+docs/node_modules/
+docs/.vitepress/cache/
+docs/.vitepress/dist/

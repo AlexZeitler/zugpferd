@@ -1,0 +1,75 @@
+---
+outline: deep
+---
+
+# Reading Invoices
+
+Zugpferd can read both UBL 2.1 and UN/CEFACT CII invoices into the same data model.
+
+## UBL Invoices
+
+```ruby
+xml = File.read("invoice_ubl.xml")
+invoice = Zugpferd::UBL::Reader.new.read(xml)
+```
+
+## CII Invoices
+
+```ruby
+xml = File.read("invoice_cii.xml")
+invoice = Zugpferd::CII::Reader.new.read(xml)
+```
+
+## Accessing Invoice Data
+
+After reading, you get a `Zugpferd::Model::Invoice` with all parsed fields:
+
+```ruby
+# Header
+invoice.number            # BT-1: Invoice number
+invoice.issue_date        # BT-2: Issue date (Date object)
+invoice.due_date          # BT-9: Due date (Date object)
+invoice.type_code         # BT-3: Invoice type code (e.g. "380")
+invoice.currency_code     # BT-5: Currency code (e.g. "EUR")
+invoice.buyer_reference   # BT-10: Buyer reference
+invoice.note              # BT-22: Invoice note
+
+# Parties
+invoice.seller.name                    # BT-27: Seller name
+invoice.seller.vat_identifier          # BT-31: Seller VAT identifier
+invoice.seller.postal_address.city_name  # BT-37: Seller city
+invoice.buyer.name                     # BT-44: Buyer name
+
+# Line items
+invoice.line_items.each do |line|
+  line.id                    # BT-126: Line identifier
+  line.invoiced_quantity     # BT-129: Quantity
+  line.unit_code             # BT-130: Unit code
+  line.line_extension_amount # BT-131: Line total
+  line.item.name             # BT-153: Item name
+  line.price.amount          # BT-146: Item net price
+end
+
+# Totals
+totals = invoice.monetary_totals
+totals.line_extension_amount   # BT-106: Sum of line totals
+totals.tax_exclusive_amount    # BT-109: Total without VAT
+totals.tax_inclusive_amount    # BT-112: Total with VAT
+totals.payable_amount          # BT-115: Amount due
+
+# Tax breakdown
+invoice.tax_breakdown.subtotals.each do |sub|
+  sub.taxable_amount   # BT-116: Tax base amount
+  sub.tax_amount       # BT-117: Tax amount
+  sub.category_code    # BT-118: Tax category (e.g. "S")
+  sub.percent          # BT-119: Tax rate
+end
+```
+
+## Monetary Values
+
+All monetary values are `BigDecimal`:
+
+```ruby
+invoice.monetary_totals.payable_amount.class  # => BigDecimal
+```

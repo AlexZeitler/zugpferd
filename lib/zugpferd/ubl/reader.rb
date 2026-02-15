@@ -5,9 +5,18 @@ require_relative "mapping"
 
 module Zugpferd
   module UBL
+    # Reads UBL 2.1 Invoice XML into {Model::Invoice}.
+    #
+    # @example
+    #   invoice = Zugpferd::UBL::Reader.new.read(File.read("invoice.xml"))
     class Reader
       include Mapping
 
+      # Parses a UBL 2.1 Invoice XML string.
+      #
+      # @param xml_string [String] valid UBL 2.1 Invoice XML
+      # @return [Model::Invoice]
+      # @raise [Nokogiri::XML::SyntaxError] if the XML is malformed
       def read(xml_string)
         doc = Nokogiri::XML(xml_string) { |config| config.strict }
         root = doc.root

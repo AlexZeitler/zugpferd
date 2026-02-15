@@ -5,9 +5,18 @@ require_relative "mapping"
 
 module Zugpferd
   module CII
+    # Reads UN/CEFACT CII CrossIndustryInvoice XML into {Model::Invoice}.
+    #
+    # @example
+    #   invoice = Zugpferd::CII::Reader.new.read(File.read("invoice.xml"))
     class Reader
       include Mapping
 
+      # Parses a CII CrossIndustryInvoice XML string.
+      #
+      # @param xml_string [String] valid CII D16B XML
+      # @return [Model::Invoice]
+      # @raise [Nokogiri::XML::SyntaxError] if the XML is malformed
       def read(xml_string)
         doc = Nokogiri::XML(xml_string) { |config| config.strict }
         root = doc.root
