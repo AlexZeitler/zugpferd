@@ -4,7 +4,7 @@ outline: deep
 
 # Reading Documents
 
-Zugpferd can read both UBL 2.1 and UN/CEFACT CII documents into the same data model.
+Zugpferd can read XRechnung and ZUGFeRD documents in both UBL 2.1 and UN/CEFACT CII into the same data model.
 
 ## UBL Documents
 

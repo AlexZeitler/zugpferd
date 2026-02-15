@@ -4,7 +4,7 @@ outline: deep
 
 # UBL Reader / Writer
 
-Read and write invoices in UBL 2.1 (OASIS) format, as used by XRechnung and PEPPOL BIS. Supports both `<Invoice>` and `<CreditNote>` documents.
+Read and write documents in UBL 2.1 (OASIS) format, as used by XRechnung, ZUGFeRD and PEPPOL BIS. Supports both `<Invoice>` and `<CreditNote>` documents.
 
 ## Reader
 

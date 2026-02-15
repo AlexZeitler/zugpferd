@@ -13,8 +13,8 @@ head:
 
 hero:
   name: "Zugpferd"
-  text: "EN 16931 E-Invoicing for Ruby"
-  tagline: Read, write and convert electronic invoices in UBL 2.1 and UN/CEFACT CII
+  text: "XRechnung & ZUGFeRD for Ruby"
+  tagline: Read, write and convert e-invoices (e-Rechnung) in UBL 2.1 and UN/CEFACT CII according to EN 16931
   actions:
     - theme: brand
       text: Getting Started

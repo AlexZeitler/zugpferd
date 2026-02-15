@@ -4,6 +4,8 @@ outline: deep
 
 # Getting Started
 
+Zugpferd is a Ruby library for reading and writing XRechnung and ZUGFeRD electronic invoices (e-Rechnung) according to EN 16931.
+
 ## Installation
 
 Add Zugpferd to your Gemfile:

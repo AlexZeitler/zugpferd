@@ -4,7 +4,7 @@ outline: deep
 
 # Data Model
 
-All model classes live under `Zugpferd::Model` and map to EN 16931 Business Groups (BGs) and Business Terms (BTs). Monetary values are `BigDecimal`, dates are `Date` objects.
+All model classes live under `Zugpferd::Model` and map to EN 16931 Business Groups (BGs) and Business Terms (BTs) as used by XRechnung and ZUGFeRD. Monetary values are `BigDecimal`, dates are `Date` objects.
 
 ## BillingDocument Module
 

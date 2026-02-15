@@ -1,8 +1,8 @@
 # Zugpferd
 
-A Ruby library for reading and writing electronic invoices according to **EN 16931**, supporting both **UBL 2.1** and **UN/CEFACT CII** syntaxes.
+A Ruby library for reading and writing **XRechnung** and **ZUGFeRD** electronic invoices (e-Rechnung) according to **EN 16931**, supporting both **UBL 2.1** and **UN/CEFACT CII** syntaxes.
 
-Built for Ruby developers integrating XRechnung or ZUGFeRD into their applications.
+Built for Ruby developers integrating XRechnung or ZUGFeRD e-invoicing into their applications.
 
 ## Features
 

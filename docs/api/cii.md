@@ -4,7 +4,7 @@ outline: deep
 
 # CII Reader / Writer
 
-Read and write invoices in UN/CEFACT Cross-Industry Invoice (CII) format, as used by ZUGFeRD and XRechnung.
+Read and write documents in UN/CEFACT Cross-Industry Invoice (CII) format, as used by ZUGFeRD and XRechnung.
 
 ## Reader
 

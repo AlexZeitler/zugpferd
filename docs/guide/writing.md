@@ -4,7 +4,7 @@ outline: deep
 
 # Writing Documents
 
-Build a billing document from scratch using the data model and write it to XML.
+Build an XRechnung or ZUGFeRD billing document from scratch using the data model and write it to UBL or CII XML.
 
 ## Building an Invoice
 
