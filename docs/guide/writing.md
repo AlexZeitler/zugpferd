@@ -2,9 +2,9 @@
 outline: deep
 ---
 
-# Writing Invoices
+# Writing Documents
 
-Build an invoice from scratch using the data model and write it to XML.
+Build a billing document from scratch using the data model and write it to XML.
 
 ## Building an Invoice
 
@@ -89,8 +89,6 @@ invoice.payment_instructions = Zugpferd::Model::PaymentInstructions.new(
 
 ## Document Types
 
-The `type_code` attribute controls the document type:
-
 Each document type has its own class with a default `type_code`:
 
 ```ruby
@@ -125,15 +123,15 @@ prepayment = Zugpferd::Model::PrepaymentInvoice.new(number: "PRE-001", issue_dat
 ## Writing to UBL
 
 ```ruby
-xml = Zugpferd::UBL::Writer.new.write(invoice)
-File.write("invoice_ubl.xml", xml)
+xml = Zugpferd::UBL::Writer.new.write(document)
+File.write("output_ubl.xml", xml)
 ```
 
 ## Writing to CII
 
 ```ruby
-xml = Zugpferd::CII::Writer.new.write(invoice)
-File.write("invoice_cii.xml", xml)
+xml = Zugpferd::CII::Writer.new.write(document)
+File.write("output_cii.xml", xml)
 ```
 
 ## Format Conversion
@@ -142,10 +140,10 @@ Convert between UBL and CII by reading one format and writing the other:
 
 ```ruby
 # CII to UBL
-invoice = Zugpferd::CII::Reader.new.read(cii_xml)
-ubl_xml = Zugpferd::UBL::Writer.new.write(invoice)
+doc = Zugpferd::CII::Reader.new.read(cii_xml)
+ubl_xml = Zugpferd::UBL::Writer.new.write(doc)
 
 # UBL to CII
-invoice = Zugpferd::UBL::Reader.new.read(ubl_xml)
-cii_xml = Zugpferd::CII::Writer.new.write(invoice)
+doc = Zugpferd::UBL::Reader.new.read(ubl_xml)
+cii_xml = Zugpferd::CII::Writer.new.write(doc)
 ```

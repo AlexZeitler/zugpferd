@@ -2,11 +2,11 @@
 outline: deep
 ---
 
-# Reading Invoices
+# Reading Documents
 
-Zugpferd can read both UBL 2.1 and UN/CEFACT CII invoices into the same data model.
+Zugpferd can read both UBL 2.1 and UN/CEFACT CII documents into the same data model.
 
-## UBL Invoices
+## UBL Documents
 
 The UBL reader automatically detects the document type from the root element and returns the appropriate model class:
 
@@ -17,7 +17,7 @@ doc.class      # => Zugpferd::Model::Invoice or Zugpferd::Model::CreditNote
 doc.type_code  # => "380" for Invoice, "381" for CreditNote
 ```
 
-## CII Invoices
+## CII Documents
 
 The CII reader maps the type code to the appropriate model class (e.g. `CreditNote` for 381, `CorrectedInvoice` for 384):
 
@@ -27,28 +27,28 @@ doc = Zugpferd::CII::Reader.new.read(xml)
 doc.class  # => Zugpferd::Model::Invoice, Zugpferd::Model::CreditNote, etc.
 ```
 
-## Accessing Invoice Data
+## Accessing Document Data
 
 After reading, all document types share the same attributes:
 
 ```ruby
 # Header
-invoice.number            # BT-1: Invoice number
-invoice.issue_date        # BT-2: Issue date (Date object)
-invoice.due_date          # BT-9: Due date (Date object)
-invoice.type_code         # BT-3: Invoice type code (e.g. "380")
-invoice.currency_code     # BT-5: Currency code (e.g. "EUR")
-invoice.buyer_reference   # BT-10: Buyer reference
-invoice.note              # BT-22: Invoice note
+doc.number            # BT-1: Document number
+doc.issue_date        # BT-2: Issue date (Date object)
+doc.due_date          # BT-9: Due date (Date object)
+doc.type_code         # BT-3: Document type code (e.g. "380")
+doc.currency_code     # BT-5: Currency code (e.g. "EUR")
+doc.buyer_reference   # BT-10: Buyer reference
+doc.note              # BT-22: Document note
 
 # Parties
-invoice.seller.name                    # BT-27: Seller name
-invoice.seller.vat_identifier          # BT-31: Seller VAT identifier
-invoice.seller.postal_address.city_name  # BT-37: Seller city
-invoice.buyer.name                     # BT-44: Buyer name
+doc.seller.name                    # BT-27: Seller name
+doc.seller.vat_identifier          # BT-31: Seller VAT identifier
+doc.seller.postal_address.city_name  # BT-37: Seller city
+doc.buyer.name                     # BT-44: Buyer name
 
 # Line items
-invoice.line_items.each do |line|
+doc.line_items.each do |line|
   line.id                    # BT-126: Line identifier
   line.invoiced_quantity     # BT-129: Quantity
   line.unit_code             # BT-130: Unit code
@@ -58,14 +58,14 @@ invoice.line_items.each do |line|
 end
 
 # Totals
-totals = invoice.monetary_totals
+totals = doc.monetary_totals
 totals.line_extension_amount   # BT-106: Sum of line totals
 totals.tax_exclusive_amount    # BT-109: Total without VAT
 totals.tax_inclusive_amount    # BT-112: Total with VAT
 totals.payable_amount          # BT-115: Amount due
 
 # Tax breakdown
-invoice.tax_breakdown.subtotals.each do |sub|
+doc.tax_breakdown.subtotals.each do |sub|
   sub.taxable_amount   # BT-116: Tax base amount
   sub.tax_amount       # BT-117: Tax amount
   sub.category_code    # BT-118: Tax category (e.g. "S")
@@ -78,5 +78,5 @@ end
 All monetary values are `BigDecimal`:
 
 ```ruby
-invoice.monetary_totals.payable_amount.class  # => BigDecimal
+doc.monetary_totals.payable_amount.class  # => BigDecimal
 ```
