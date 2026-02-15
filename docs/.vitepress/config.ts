@@ -17,8 +17,8 @@ export default defineConfig({
         text: 'Guide',
         items: [
           { text: 'Getting Started', link: '/guide/getting-started' },
-          { text: 'Reading Invoices', link: '/guide/reading' },
-          { text: 'Writing Invoices', link: '/guide/writing' }
+          { text: 'Reading Documents', link: '/guide/reading' },
+          { text: 'Writing Documents', link: '/guide/writing' }
         ]
       },
       {

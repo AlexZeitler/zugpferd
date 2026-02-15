@@ -7,6 +7,12 @@ module Zugpferd
         "cbc" => "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2",
       }.freeze
 
+      CN_NS = {
+        "cn" => "urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2",
+        "cac" => "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2",
+        "cbc" => "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2",
+      }.freeze
+
       # Invoice (BG-0)
       INVOICE = {
         number:             "cbc:ID",

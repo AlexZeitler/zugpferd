@@ -25,9 +25,11 @@ hero:
 
 features:
   - title: UBL 2.1 & CII
-    details: Full support for both EN 16931 syntaxes — read, write and roundtrip any XRechnung or ZUGFeRD invoice.
+    details: Full support for both EN 16931 syntaxes — read, write and roundtrip any XRechnung or ZUGFeRD document.
+  - title: Multiple Document Types
+    details: Dedicated classes for Invoice, Credit Note, Corrected Invoice, Self-billed Invoice, Partial Invoice and Prepayment Invoice.
   - title: XRechnung & ZUGFeRD
-    details: Supports XRechnung and ZUGFeRD profiles — read any compliant invoice and convert between UBL and CII.
+    details: Supports XRechnung and ZUGFeRD profiles — read any compliant document and convert between UBL and CII.
   - title: Pure Ruby Data Model
     details: Agnostic data model with BigDecimal amounts, Date fields, and plain Ruby objects.
 ---
