@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
     "source_code_uri"   => "https://github.com/alexzeitler/zugpferd",
     "homepage_uri"      => spec.homepage,
     "changelog_uri"     => "https://github.com/alexzeitler/zugpferd/blob/master/CHANGELOG.md",
-    "documentation_uri" => "https://alexzeitler.github.io/zugpferd/",
+    "documentation_uri" => "https://www.rubydoc.info/gems/zugpferd",
     "bug_tracker_uri"   => "https://github.com/alexzeitler/zugpferd/issues",
   }
 
