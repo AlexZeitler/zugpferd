@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = "zugpferd"
-  spec.version       = "0.2.2"
+  spec.version       = "0.3.0"
   spec.authors       = ["Alexander Zeitler"]
   spec.summary       = "XRechnung & ZUGFeRD e-invoicing library for Ruby (UBL + CII)"
   spec.description   = "Read, write and convert XRechnung and ZUGFeRD electronic invoices " \
