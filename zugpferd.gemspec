@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = "zugpferd"
-  spec.version       = "0.1.0"
+  spec.version       = "0.2.0"
   spec.authors       = ["Alexander Zeitler"]
   spec.summary       = "EN 16931 E-Invoice library for Ruby (UBL + CII)"
   spec.license       = "MIT"
