@@ -30,6 +30,8 @@ features:
     details: Dedicated classes for Invoice, Credit Note, Corrected Invoice, Self-billed Invoice, Partial Invoice and Prepayment Invoice.
   - title: PDF/A-3 Embedding
     details: Create ZUGFeRD / Factur-X hybrid invoices by embedding XML into PDF/A-3 via Ghostscript.
+  - title: Validation
+    details: Validate invoices against EN 16931 and XRechnung business rules using Schematron. Optional Java dependency.
   - title: XRechnung & ZUGFeRD
     details: Supports XRechnung and ZUGFeRD profiles — read any compliant document and convert between UBL and CII.
   - title: Pure Ruby Data Model

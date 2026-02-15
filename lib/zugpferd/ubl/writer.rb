@@ -53,6 +53,7 @@ module Zugpferd
 
         build_supplier(xml, doc.seller, doc.payment_instructions) if doc.seller
         build_customer(xml, doc.buyer) if doc.buyer
+        build_delivery(xml, doc) if doc.delivery_date
         build_payment_means(xml, doc.payment_instructions) if doc.payment_instructions
         build_payment_terms(xml, doc.payment_instructions) if doc.payment_instructions&.note
         doc.allowance_charges.each { |ac| build_allowance_charge(xml, ac, doc.currency_code) }
@@ -137,6 +138,12 @@ module Zugpferd
           xml["cbc"].Name contact.name if contact.name
           xml["cbc"].Telephone contact.telephone if contact.telephone
           xml["cbc"].ElectronicMail contact.email if contact.email
+        end
+      end
+
+      def build_delivery(xml, doc)
+        xml["cac"].Delivery do
+          xml["cbc"].ActualDeliveryDate doc.delivery_date.to_s
         end
       end
 

@@ -33,10 +33,13 @@ module Zugpferd
 
         model_class = @credit_note ? Model::CreditNote : Model::Invoice
 
+        delivery_node = root.at_xpath(DELIVERY, @ns)
+
         model_class.new(
           number: text(root, INVOICE[:number]),
           issue_date: parse_date(text(root, INVOICE[:issue_date])),
           due_date: parse_date(text(root, INVOICE[:due_date])),
+          delivery_date: delivery_node ? parse_date(text(delivery_node, DELIVERY_DATE)) : nil,
           type_code: text(root, type_code_element),
           currency_code: text(root, INVOICE[:currency_code]),
           buyer_reference: text(root, INVOICE[:buyer_reference]),

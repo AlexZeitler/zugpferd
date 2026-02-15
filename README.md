@@ -10,6 +10,7 @@ Built for Ruby developers integrating XRechnung or ZUGFeRD e-invoicing into thei
 - UBL 2.1 Reader & Writer (Invoice and Credit Note)
 - UN/CEFACT CII Reader & Writer
 - PDF/A-3 embedding via Ghostscript — create ZUGFeRD / Factur-X hybrid invoices
+- XSD and Schematron validation (EN 16931 + XRechnung) — optional, requires Java + Saxon
 - Supported document types:
   - `380` — Commercial Invoice
   - `381` — Credit Note (UBL: separate `<CreditNote>` root element)
@@ -17,7 +18,7 @@ Built for Ruby developers integrating XRechnung or ZUGFeRD e-invoicing into thei
   - `389` — Self-billed Invoice
   - `326` — Partial Invoice
   - `386` — Prepayment Invoice
-- No Java runtime dependency, no Rails dependency
+- No Rails dependency
 - BigDecimal for all monetary amounts
 
 ## Installation
@@ -120,8 +121,27 @@ embedder.embed(
   xml: xml,
   output_path: "rechnung_zugferd.pdf",
   version: "2p1",
-  conformance_level: "EN 16931"
+  conformance_level: "XRECHNUNG"  # use "EN 16931" for non-XRechnung invoices
 )
+```
+
+### Validating an invoice
+
+Requires Java and Saxon HE. Install via `bin/setup-schemas`.
+
+```ruby
+require "zugpferd"
+require "zugpferd/validation"  # explicit opt-in, requires Java + Saxon
+
+xml = Zugpferd::CII::Writer.new.write(invoice)
+
+validator = Zugpferd::Validation::SchematronValidator.new(schemas_path: "vendor/schemas")
+errors = validator.validate(xml, rule_set: :xrechnung_cii)
+fatals = errors.select { |e| e.flag == "fatal" }
+
+if fatals.any?
+  fatals.each { |e| puts "[#{e.id}] #{e.text}" }
+end
 ```
 
 ## Data Model

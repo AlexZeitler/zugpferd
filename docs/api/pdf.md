@@ -31,7 +31,7 @@ Converts a PDF to PDF/A-3 and embeds the given XML as an associated file.
 | `xml` | `String` | (required) | XML content to embed (UBL or CII) |
 | `output_path` | `String` | (required) | Path for the output PDF/A-3 file |
 | `version` | `String` | `"2p1"` | ZUGFeRD version: `"2p1"`, `"2p0"`, `"1p0"`, `"rc"` |
-| `conformance_level` | `String` | `"EN 16931"` | Profile level (version-dependent) |
+| `conformance_level` | `String` | `"EN 16931"` | Profile level (version-dependent). Must match the invoice's CIUS — use `"XRECHNUNG"` for XRechnung invoices. |
 
 **Returns:** `String` — the `output_path`
 

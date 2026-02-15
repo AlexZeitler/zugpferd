@@ -9,7 +9,8 @@
 - veraPDF validation wrapper (`Zugpferd::Validation::PdfValidator`) for PDF/A-3 compliance checks
 - Mustangproject validation wrapper (`Zugpferd::Validation::MustangValidator`) for full ZUGFeRD validation
 - Docker setup for veraPDF (REST API) and Mustangproject (CLI)
-- `bin/setup-schemas` downloads `zugferd.ps` and `default_rgb.icc` from Ghostscript
+- XSD and Schematron validation included in gem (`require "zugpferd/validation"`) — optional, requires Java + Saxon
+- `bin/setup-schemas` downloads Saxon HE, XSD schemas, CEN/XRechnung Schematron, `zugferd.ps` and `default_rgb.icc`
 
 ## [0.2.0] - 2026-02-15
 

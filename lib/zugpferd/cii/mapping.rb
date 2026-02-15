@@ -23,6 +23,10 @@ module Zugpferd
         profile_id:       "#{CONTEXT}/ram:BusinessProcessSpecifiedDocumentContextParameter/ram:ID",
       }.freeze
 
+      # Delivery (BG-13)
+      DELIVERY = "#{TRANSACTION}/ram:ApplicableHeaderTradeDelivery"
+      DELIVERY_DATE = "ram:ActualDeliverySupplyChainEvent/ram:OccurrenceDateTime/udt:DateTimeString"
+
       # Settlement (contains currency, payment, tax, totals)
       SETTLEMENT = "#{TRANSACTION}/ram:ApplicableHeaderTradeSettlement"
       AGREEMENT = "#{TRANSACTION}/ram:ApplicableHeaderTradeAgreement"

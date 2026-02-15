@@ -2,7 +2,136 @@
 set -euo pipefail
 
 VENDOR_DIR="$(cd "$(dirname "$0")/../vendor" && pwd)"
+SCHEMAS_DIR="$VENDOR_DIR/schemas"
+TMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TMP_DIR"' EXIT
 
+# --- Saxon HE (for Schematron validation) ---
+
+echo "==> Downloading Saxon HE..."
+SAXON_DIR="$SCHEMAS_DIR/saxon"
+mkdir -p "$SAXON_DIR"
+
+SAXON_VERSION="12.5"
+XMLRESOLVER_VERSION="5.2.2"
+MAVEN="https://repo1.maven.org/maven2"
+
+if [ ! -f "$SAXON_DIR/saxon-he-$SAXON_VERSION.jar" ]; then
+  echo "    Downloading saxon-he-$SAXON_VERSION.jar..."
+  curl -fsSL "$MAVEN/net/sf/saxon/Saxon-HE/$SAXON_VERSION/Saxon-HE-$SAXON_VERSION.jar" \
+    -o "$SAXON_DIR/saxon-he-$SAXON_VERSION.jar"
+else
+  echo "    saxon-he-$SAXON_VERSION.jar already present"
+fi
+
+if [ ! -f "$SAXON_DIR/xmlresolver-$XMLRESOLVER_VERSION.jar" ]; then
+  echo "    Downloading xmlresolver-$XMLRESOLVER_VERSION.jar..."
+  curl -fsSL "$MAVEN/org/xmlresolver/xmlresolver/$XMLRESOLVER_VERSION/xmlresolver-$XMLRESOLVER_VERSION.jar" \
+    -o "$SAXON_DIR/xmlresolver-$XMLRESOLVER_VERSION.jar"
+else
+  echo "    xmlresolver-$XMLRESOLVER_VERSION.jar already present"
+fi
+echo "    OK"
+
+# --- UBL 2.1 XSD ---
+
+echo ""
+echo "==> Downloading UBL 2.1 XSD schemas..."
+UBL_DIR="$SCHEMAS_DIR/ubl"
+
+if [ ! -d "$UBL_DIR/xsd/maindoc" ]; then
+  echo "    Downloading UBL-2.1.zip..."
+  curl -fsSL "http://docs.oasis-open.org/ubl/os-UBL-2.1/UBL-2.1.zip" \
+    -o "$TMP_DIR/UBL-2.1.zip"
+  mkdir -p "$UBL_DIR/xsd"
+  unzip -qo "$TMP_DIR/UBL-2.1.zip" "os-UBL-2.1/xsd/*" -d "$TMP_DIR"
+  cp -r "$TMP_DIR/os-UBL-2.1/xsd/"* "$UBL_DIR/xsd/"
+else
+  echo "    UBL XSD already present"
+fi
+echo "    OK"
+
+# --- CII D16B XSD ---
+
+echo ""
+echo "==> Downloading CII D16B XSD schemas..."
+CII_DIR="$SCHEMAS_DIR/cii"
+
+if [ ! -f "$CII_DIR/CrossIndustryInvoice_100pD16B.xsd" ]; then
+  echo "    Downloading D16B SCRDM (Subset) CII..."
+  CII_URL="https://unece.org/fileadmin/DAM/cefact/xml_schemas/D16B_SCRDM__Subset__CII.zip"
+  curl -fsSL "$CII_URL" -o "$TMP_DIR/cii-outer.zip" || {
+    echo "    WARN: Could not download CII XSD from UN/CEFACT."
+    echo "    Download manually from: $CII_URL"
+    echo "    Extract the 'uncoupled' XSD files into $CII_DIR/"
+  }
+
+  if [ -f "$TMP_DIR/cii-outer.zip" ]; then
+    mkdir -p "$CII_DIR"
+    unzip -qo "$TMP_DIR/cii-outer.zip" -d "$TMP_DIR/cii-outer"
+    # The outer ZIP contains nested ZIPs — extract the uncoupled one
+    UNCOUPLED_ZIP=$(find "$TMP_DIR/cii-outer" -name "*uncoupled.zip" -type f | head -1)
+    if [ -n "$UNCOUPLED_ZIP" ]; then
+      unzip -qo "$UNCOUPLED_ZIP" -d "$CII_DIR"
+    else
+      echo "    WARN: Could not find uncoupled ZIP inside CII archive"
+    fi
+  fi
+else
+  echo "    CII XSD already present"
+fi
+echo "    OK"
+
+# --- CEN Schematron EN16931 ---
+
+echo ""
+echo "==> Downloading CEN Schematron EN16931..."
+CEN_VERSION="1.3.15"
+CEN_BASE="https://github.com/ConnectingEurope/eInvoicing-EN16931/releases/download/validation-$CEN_VERSION"
+
+CEN_UBL_DIR="$SCHEMAS_DIR/schematron/cen/ubl"
+if [ ! -f "$CEN_UBL_DIR/xslt/EN16931-UBL-validation.xslt" ]; then
+  echo "    Downloading en16931-ubl-$CEN_VERSION.zip..."
+  curl -fsSL "$CEN_BASE/en16931-ubl-$CEN_VERSION.zip" -o "$TMP_DIR/cen-ubl.zip"
+  mkdir -p "$CEN_UBL_DIR"
+  unzip -qo "$TMP_DIR/cen-ubl.zip" -d "$CEN_UBL_DIR"
+else
+  echo "    CEN UBL Schematron already present"
+fi
+
+CEN_CII_DIR="$SCHEMAS_DIR/schematron/cen/cii"
+if [ ! -f "$CEN_CII_DIR/xslt/EN16931-CII-validation.xslt" ]; then
+  echo "    Downloading en16931-cii-$CEN_VERSION.zip..."
+  curl -fsSL "$CEN_BASE/en16931-cii-$CEN_VERSION.zip" -o "$TMP_DIR/cen-cii.zip"
+  mkdir -p "$CEN_CII_DIR"
+  unzip -qo "$TMP_DIR/cen-cii.zip" -d "$CEN_CII_DIR"
+else
+  echo "    CEN CII Schematron already present"
+fi
+echo "    OK"
+
+# --- XRechnung Schematron ---
+
+echo ""
+echo "==> Downloading XRechnung Schematron..."
+XRECHNUNG_SCHEMATRON_VERSION="2.5.0"
+XRECHNUNG_SPEC_VERSION="3.0.2"
+XR_DIR="$SCHEMAS_DIR/schematron/xrechnung"
+
+if [ ! -f "$XR_DIR/schematron/ubl/XRechnung-UBL-validation.xsl" ]; then
+  echo "    Downloading xrechnung-$XRECHNUNG_SPEC_VERSION-schematron-$XRECHNUNG_SCHEMATRON_VERSION.zip..."
+  curl -fsSL "https://github.com/itplr-kosit/xrechnung-schematron/releases/download/release-$XRECHNUNG_SCHEMATRON_VERSION/xrechnung-$XRECHNUNG_SPEC_VERSION-schematron-$XRECHNUNG_SCHEMATRON_VERSION.zip" \
+    -o "$TMP_DIR/xrechnung-schematron.zip"
+  mkdir -p "$XR_DIR"
+  unzip -qo "$TMP_DIR/xrechnung-schematron.zip" -d "$XR_DIR"
+else
+  echo "    XRechnung Schematron already present"
+fi
+echo "    OK"
+
+# --- XRechnung Testsuite ---
+
+echo ""
 echo "==> Downloading XRechnung test suite..."
 if [ ! -d "$VENDOR_DIR/testsuite" ]; then
   git clone --depth 1 \
@@ -12,6 +141,8 @@ else
   cd "$VENDOR_DIR/testsuite" && git pull --ff-only
 fi
 echo "    OK"
+
+# --- ZUGFeRD PDF artifacts ---
 
 echo ""
 echo "==> Downloading ZUGFeRD PDF artifacts..."
@@ -38,3 +169,8 @@ echo "    OK"
 
 echo ""
 echo "All artifacts ready in: $VENDOR_DIR"
+echo ""
+echo "Optional dependencies:"
+echo "  - Java (for Schematron validation with Saxon)"
+echo "  - Ghostscript (for PDF/A-3 embedding)"
+echo "  - Docker (for veraPDF / Mustangproject validation)"

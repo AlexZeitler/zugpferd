@@ -68,14 +68,27 @@ The `version` parameter controls which ZUGFeRD/Factur-X version metadata is writ
 | `"2p0"` | `zugferd-invoice.xml` | MINIMUM, BASIC WL, BASIC, EN 16931, EXTENDED, XRECHNUNG |
 | `"1p0"` | `ZUGFeRD-invoice.xml` | BASIC, COMFORT, EXTENDED |
 
+::: warning Conformance level must match the CIUS
+If your invoice uses the XRechnung CIUS (i.e. `customization_id` contains `urn:xeinkauf.de:kosit:xrechnung_3.0`), you **must** set `conformance_level: "XRECHNUNG"`. A mismatch will cause validation warnings in downstream systems.
+:::
+
 ```ruby
-# ZUGFeRD 2.1 / Factur-X with XRECHNUNG profile
+# XRechnung invoice → conformance_level must be "XRECHNUNG"
 embedder.embed(
   pdf_path: "input.pdf",
   xml: xml,
   output_path: "output.pdf",
   version: "2p1",
   conformance_level: "XRECHNUNG"
+)
+
+# Plain EN 16931 invoice (no national CIUS) → "EN 16931"
+embedder.embed(
+  pdf_path: "input.pdf",
+  xml: xml,
+  output_path: "output.pdf",
+  version: "2p1",
+  conformance_level: "EN 16931"
 )
 
 # ZUGFeRD 1.0

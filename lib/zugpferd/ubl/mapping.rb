@@ -26,6 +26,10 @@ module Zugpferd
         note:               "cbc:Note",
       }.freeze
 
+      # Delivery (BG-13)
+      DELIVERY = "cac:Delivery"
+      DELIVERY_DATE = "cbc:ActualDeliveryDate"
+
       # Seller (BG-4)
       SELLER = "cac:AccountingSupplierParty/cac:Party"
       # Buyer (BG-7)

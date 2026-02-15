@@ -66,7 +66,7 @@ module Zugpferd
         xml["rsm"].SupplyChainTradeTransaction do
           doc.line_items.each { |li| build_line_item(xml, li) }
           build_agreement(xml, doc)
-          xml["ram"].ApplicableHeaderTradeDelivery
+          build_delivery(xml, doc)
           build_settlement(xml, doc)
         end
       end
@@ -136,6 +136,18 @@ module Zugpferd
           if contact.email
             xml["ram"].EmailURIUniversalCommunication do
               xml["ram"].URIID contact.email
+            end
+          end
+        end
+      end
+
+      def build_delivery(xml, doc)
+        xml["ram"].ApplicableHeaderTradeDelivery do
+          if doc.delivery_date
+            xml["ram"].ActualDeliverySupplyChainEvent do
+              xml["ram"].OccurrenceDateTime do
+                xml["udt"].DateTimeString(format_cii_date(doc.delivery_date), format: "102")
+              end
             end
           end
         end

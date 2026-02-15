@@ -19,6 +19,7 @@ export default defineConfig({
           { text: 'Getting Started', link: '/guide/getting-started' },
           { text: 'Reading Documents', link: '/guide/reading' },
           { text: 'Writing Documents', link: '/guide/writing' },
+          { text: 'Validation', link: '/guide/validation' },
           { text: 'PDF/A-3 Embedding', link: '/guide/pdf-embedding' }
         ]
       },
@@ -28,6 +29,7 @@ export default defineConfig({
           { text: 'Data Model', link: '/api/models' },
           { text: 'UBL Reader / Writer', link: '/api/ubl' },
           { text: 'CII Reader / Writer', link: '/api/cii' },
+          { text: 'Validation', link: '/api/validation' },
           { text: 'PDF Embedder', link: '/api/pdf' }
         ]
       }
