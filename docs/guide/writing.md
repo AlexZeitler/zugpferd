@@ -87,6 +87,41 @@ invoice.payment_instructions = Zugpferd::Model::PaymentInstructions.new(
 )
 ```
 
+## Document Types
+
+The `type_code` attribute controls the document type:
+
+Each document type has its own class with a default `type_code`:
+
+```ruby
+# Commercial Invoice (type_code: "380")
+invoice = Zugpferd::Model::Invoice.new(number: "INV-001", issue_date: Date.today)
+
+# Credit Note (type_code: "381") — UBL writer generates <CreditNote> root element
+credit_note = Zugpferd::Model::CreditNote.new(number: "CN-001", issue_date: Date.today)
+
+# Corrected Invoice (type_code: "384")
+corrected = Zugpferd::Model::CorrectedInvoice.new(number: "CORR-001", issue_date: Date.today)
+
+# Self-billed Invoice (type_code: "389")
+self_billed = Zugpferd::Model::SelfBilledInvoice.new(number: "SB-001", issue_date: Date.today)
+
+# Partial Invoice (type_code: "326")
+partial = Zugpferd::Model::PartialInvoice.new(number: "P-001", issue_date: Date.today)
+
+# Prepayment Invoice (type_code: "386")
+prepayment = Zugpferd::Model::PrepaymentInvoice.new(number: "PRE-001", issue_date: Date.today)
+```
+
+| Class | Code | Description |
+|-------|------|-------------|
+| `Invoice` | `380` | Commercial Invoice |
+| `CreditNote` | `381` | Credit Note |
+| `CorrectedInvoice` | `384` | Corrected Invoice |
+| `SelfBilledInvoice` | `389` | Self-billed Invoice |
+| `PartialInvoice` | `326` | Partial Invoice |
+| `PrepaymentInvoice` | `386` | Prepayment Invoice |
+
 ## Writing to UBL
 
 ```ruby

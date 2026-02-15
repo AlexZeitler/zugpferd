@@ -3,23 +3,32 @@ require_relative "mapping"
 
 module Zugpferd
   module UBL
-    # Writes {Model::Invoice} to UBL 2.1 Invoice XML.
+    # Writes a billing document to UBL 2.1 Invoice or Credit Note XML.
     #
     # @example
-    #   xml = Zugpferd::UBL::Writer.new.write(invoice)
+    #   xml = Zugpferd::UBL::Writer.new.write(document)
     class Writer
       include Mapping
 
-      # Serializes an invoice to UBL 2.1 XML.
+      # Serializes a billing document to UBL 2.1 XML.
       #
-      # @param invoice [Model::Invoice] the invoice to serialize
+      # @param document [Model::BillingDocument] the document to serialize
       # @return [String] UTF-8 encoded XML string
-      def write(invoice)
+      def write(document)
+        @credit_note = document.type_code == "381"
         builder = Nokogiri::XML::Builder.new(encoding: "UTF-8") do |xml|
-          xml.Invoice(xmlns: NS["ubl"],
-                      "xmlns:cac" => NS["cac"],
-                      "xmlns:cbc" => NS["cbc"]) do
-            build_invoice(xml, invoice)
+          if @credit_note
+            xml.CreditNote(xmlns: CN_NS["cn"],
+                           "xmlns:cac" => CN_NS["cac"],
+                           "xmlns:cbc" => CN_NS["cbc"]) do
+              build_document(xml, document)
+            end
+          else
+            xml.Invoice(xmlns: NS["ubl"],
+                        "xmlns:cac" => NS["cac"],
+                        "xmlns:cbc" => NS["cbc"]) do
+              build_document(xml, document)
+            end
           end
         end
         builder.to_xml
@@ -27,25 +36,29 @@ module Zugpferd
 
       private
 
-      def build_invoice(xml, inv)
-        xml["cbc"].CustomizationID inv.customization_id if inv.customization_id
-        xml["cbc"].ProfileID inv.profile_id if inv.profile_id
-        xml["cbc"].ID inv.number
-        xml["cbc"].IssueDate inv.issue_date.to_s
-        xml["cbc"].DueDate inv.due_date.to_s if inv.due_date
-        xml["cbc"].InvoiceTypeCode inv.type_code
-        xml["cbc"].Note inv.note if inv.note
-        xml["cbc"].DocumentCurrencyCode inv.currency_code
-        xml["cbc"].BuyerReference inv.buyer_reference if inv.buyer_reference
+      def build_document(xml, doc)
+        xml["cbc"].CustomizationID doc.customization_id if doc.customization_id
+        xml["cbc"].ProfileID doc.profile_id if doc.profile_id
+        xml["cbc"].ID doc.number
+        xml["cbc"].IssueDate doc.issue_date.to_s
+        xml["cbc"].DueDate doc.due_date.to_s if doc.due_date
+        if @credit_note
+          xml["cbc"].CreditNoteTypeCode doc.type_code
+        else
+          xml["cbc"].InvoiceTypeCode doc.type_code
+        end
+        xml["cbc"].Note doc.note if doc.note
+        xml["cbc"].DocumentCurrencyCode doc.currency_code
+        xml["cbc"].BuyerReference doc.buyer_reference if doc.buyer_reference
 
-        build_supplier(xml, inv.seller, inv.payment_instructions) if inv.seller
-        build_customer(xml, inv.buyer) if inv.buyer
-        build_payment_means(xml, inv.payment_instructions) if inv.payment_instructions
-        build_payment_terms(xml, inv.payment_instructions) if inv.payment_instructions&.note
-        inv.allowance_charges.each { |ac| build_allowance_charge(xml, ac, inv.currency_code) }
-        build_tax_total(xml, inv.tax_breakdown) if inv.tax_breakdown
-        build_monetary_total(xml, inv.monetary_totals, inv.currency_code) if inv.monetary_totals
-        inv.line_items.each { |li| build_invoice_line(xml, li, inv.currency_code) }
+        build_supplier(xml, doc.seller, doc.payment_instructions) if doc.seller
+        build_customer(xml, doc.buyer) if doc.buyer
+        build_payment_means(xml, doc.payment_instructions) if doc.payment_instructions
+        build_payment_terms(xml, doc.payment_instructions) if doc.payment_instructions&.note
+        doc.allowance_charges.each { |ac| build_allowance_charge(xml, ac, doc.currency_code) }
+        build_tax_total(xml, doc.tax_breakdown) if doc.tax_breakdown
+        build_monetary_total(xml, doc.monetary_totals, doc.currency_code) if doc.monetary_totals
+        doc.line_items.each { |li| build_line(xml, li, doc.currency_code) }
       end
 
       def build_supplier(xml, party, payment_instructions = nil)
@@ -235,12 +248,15 @@ module Zugpferd
         end
       end
 
-      def build_invoice_line(xml, line, currency_code)
-        xml["cac"].InvoiceLine do
+      def build_line(xml, line, currency_code)
+        line_method = @credit_note ? :CreditNoteLine : :InvoiceLine
+        quantity_method = @credit_note ? :CreditedQuantity : :InvoicedQuantity
+
+        xml["cac"].send(line_method) do
           xml["cbc"].ID line.id
           xml["cbc"].Note line.note if line.note
-          xml["cbc"].InvoicedQuantity(format_decimal(line.invoiced_quantity),
-                                      unitCode: line.unit_code)
+          xml["cbc"].send(quantity_method, format_decimal(line.invoiced_quantity),
+                          unitCode: line.unit_code)
           xml["cbc"].LineExtensionAmount(format_decimal(line.line_extension_amount),
                                          currencyID: currency_code)
           build_item(xml, line.item) if line.item

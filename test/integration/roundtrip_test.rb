@@ -37,6 +37,41 @@ class UBLRoundtripTest < Minitest::Test
   end
 end
 
+class UBLCreditNoteRoundtripTest < Minitest::Test
+  include ValidatorHelper
+
+  FIXTURE = File.expand_path(
+    "../../vendor/schemas/schematron/cen/ubl/examples/ubl-tc434-creditnote1.xml", __dir__
+  )
+
+  def setup
+    skip "Credit note fixture not available" unless File.exist?(FIXTURE)
+  end
+
+  def test_roundtrip_credit_note
+    xml = File.read(FIXTURE)
+    invoice = Zugpferd::UBL::Reader.new.read(xml)
+
+    assert_instance_of Zugpferd::Model::CreditNote, invoice
+    assert_equal "381", invoice.type_code
+    assert_equal "018304 / 28865", invoice.number
+
+    output = Zugpferd::UBL::Writer.new.write(invoice)
+
+    doc = Nokogiri::XML(output)
+    assert_equal "CreditNote", doc.root.name
+    assert_equal "urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2",
+                 doc.root.namespace.href
+
+    errors = schematron_validator.validate(output, rule_set: :cen_ubl)
+    fatals = errors.select { |e| e.flag == "fatal" }
+
+    assert_empty fatals,
+      "Credit note roundtrip failed:\n" +
+      fatals.map { |e| "  [#{e.id}] #{e.text}" }.join("\n")
+  end
+end
+
 class CIIRoundtripTest < Minitest::Test
   include ValidatorHelper
 

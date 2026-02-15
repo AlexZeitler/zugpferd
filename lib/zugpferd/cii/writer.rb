@@ -3,18 +3,18 @@ require_relative "mapping"
 
 module Zugpferd
   module CII
-    # Writes {Model::Invoice} to UN/CEFACT CII CrossIndustryInvoice XML.
+    # Writes a billing document to UN/CEFACT CII CrossIndustryInvoice XML.
     #
     # @example
-    #   xml = Zugpferd::CII::Writer.new.write(invoice)
+    #   xml = Zugpferd::CII::Writer.new.write(document)
     class Writer
       include Mapping
 
-      # Serializes an invoice to CII D16B XML.
+      # Serializes a billing document to CII D16B XML.
       #
-      # @param invoice [Model::Invoice] the invoice to serialize
+      # @param document [Model::BillingDocument] the document to serialize
       # @return [String] UTF-8 encoded XML string
-      def write(invoice)
+      def write(document)
         builder = Nokogiri::XML::Builder.new(encoding: "UTF-8") do |xml|
           xml["rsm"].CrossIndustryInvoice(
             "xmlns:rsm" => NS["rsm"],
@@ -22,9 +22,9 @@ module Zugpferd
             "xmlns:qdt" => NS["qdt"],
             "xmlns:udt" => NS["udt"]
           ) do
-            build_document_context(xml, invoice)
-            build_exchanged_document(xml, invoice)
-            build_transaction(xml, invoice)
+            build_document_context(xml, document)
+            build_exchanged_document(xml, document)
+            build_transaction(xml, document)
           end
         end
         builder.to_xml
@@ -32,50 +32,50 @@ module Zugpferd
 
       private
 
-      def build_document_context(xml, inv)
+      def build_document_context(xml, doc)
         xml["rsm"].ExchangedDocumentContext do
-          if inv.profile_id
+          if doc.profile_id
             xml["ram"].BusinessProcessSpecifiedDocumentContextParameter do
-              xml["ram"].ID inv.profile_id
+              xml["ram"].ID doc.profile_id
             end
           end
-          if inv.customization_id
+          if doc.customization_id
             xml["ram"].GuidelineSpecifiedDocumentContextParameter do
-              xml["ram"].ID inv.customization_id
+              xml["ram"].ID doc.customization_id
             end
           end
         end
       end
 
-      def build_exchanged_document(xml, inv)
+      def build_exchanged_document(xml, doc)
         xml["rsm"].ExchangedDocument do
-          xml["ram"].ID inv.number
-          xml["ram"].TypeCode inv.type_code
+          xml["ram"].ID doc.number
+          xml["ram"].TypeCode doc.type_code
           xml["ram"].IssueDateTime do
-            xml["udt"].DateTimeString(format_cii_date(inv.issue_date), format: "102")
+            xml["udt"].DateTimeString(format_cii_date(doc.issue_date), format: "102")
           end
-          if inv.note
+          if doc.note
             xml["ram"].IncludedNote do
-              xml["ram"].Content inv.note
+              xml["ram"].Content doc.note
             end
           end
         end
       end
 
-      def build_transaction(xml, inv)
+      def build_transaction(xml, doc)
         xml["rsm"].SupplyChainTradeTransaction do
-          inv.line_items.each { |li| build_line_item(xml, li) }
-          build_agreement(xml, inv)
+          doc.line_items.each { |li| build_line_item(xml, li) }
+          build_agreement(xml, doc)
           xml["ram"].ApplicableHeaderTradeDelivery
-          build_settlement(xml, inv)
+          build_settlement(xml, doc)
         end
       end
 
-      def build_agreement(xml, inv)
+      def build_agreement(xml, doc)
         xml["ram"].ApplicableHeaderTradeAgreement do
-          xml["ram"].BuyerReference inv.buyer_reference if inv.buyer_reference
-          build_party(xml, "SellerTradeParty", inv.seller) if inv.seller
-          build_party(xml, "BuyerTradeParty", inv.buyer) if inv.buyer
+          xml["ram"].BuyerReference doc.buyer_reference if doc.buyer_reference
+          build_party(xml, "SellerTradeParty", doc.seller) if doc.seller
+          build_party(xml, "BuyerTradeParty", doc.buyer) if doc.buyer
         end
       end
 
@@ -141,41 +141,41 @@ module Zugpferd
         end
       end
 
-      def build_settlement(xml, inv)
+      def build_settlement(xml, doc)
         xml["ram"].ApplicableHeaderTradeSettlement do
-          if inv.payment_instructions&.creditor_reference_id
-            xml["ram"].CreditorReferenceID inv.payment_instructions.creditor_reference_id
+          if doc.payment_instructions&.creditor_reference_id
+            xml["ram"].CreditorReferenceID doc.payment_instructions.creditor_reference_id
           end
 
-          if inv.payment_instructions&.payment_id
-            xml["ram"].PaymentReference inv.payment_instructions.payment_id
+          if doc.payment_instructions&.payment_id
+            xml["ram"].PaymentReference doc.payment_instructions.payment_id
           end
 
-          xml["ram"].InvoiceCurrencyCode inv.currency_code
+          xml["ram"].InvoiceCurrencyCode doc.currency_code
 
-          build_payment_means(xml, inv.payment_instructions) if inv.payment_instructions
+          build_payment_means(xml, doc.payment_instructions) if doc.payment_instructions
 
-          if inv.tax_breakdown
-            inv.tax_breakdown.subtotals.each do |sub|
+          if doc.tax_breakdown
+            doc.tax_breakdown.subtotals.each do |sub|
               build_tax_subtotal(xml, sub)
             end
           end
 
-          inv.allowance_charges.each { |ac| build_allowance_charge(xml, ac) }
+          doc.allowance_charges.each { |ac| build_allowance_charge(xml, ac) }
 
-          if inv.payment_instructions&.note || inv.due_date || inv.payment_instructions&.mandate_reference
+          if doc.payment_instructions&.note || doc.due_date || doc.payment_instructions&.mandate_reference
             xml["ram"].SpecifiedTradePaymentTerms do
-              xml["ram"].Description inv.payment_instructions.note if inv.payment_instructions&.note
-              if inv.due_date
+              xml["ram"].Description doc.payment_instructions.note if doc.payment_instructions&.note
+              if doc.due_date
                 xml["ram"].DueDateDateTime do
-                  xml["udt"].DateTimeString(format_cii_date(inv.due_date), format: "102")
+                  xml["udt"].DateTimeString(format_cii_date(doc.due_date), format: "102")
                 end
               end
-              xml["ram"].DirectDebitMandateID inv.payment_instructions.mandate_reference if inv.payment_instructions&.mandate_reference
+              xml["ram"].DirectDebitMandateID doc.payment_instructions.mandate_reference if doc.payment_instructions&.mandate_reference
             end
           end
 
-          build_monetary_total(xml, inv.monetary_totals, inv.tax_breakdown) if inv.monetary_totals
+          build_monetary_total(xml, doc.monetary_totals, doc.tax_breakdown) if doc.monetary_totals
         end
       end
 

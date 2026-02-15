@@ -5,17 +5,25 @@ require_relative "mapping"
 
 module Zugpferd
   module CII
-    # Reads UN/CEFACT CII CrossIndustryInvoice XML into {Model::Invoice}.
+    # Reads UN/CEFACT CII CrossIndustryInvoice XML into the appropriate model class.
     #
     # @example
-    #   invoice = Zugpferd::CII::Reader.new.read(File.read("invoice.xml"))
+    #   doc = Zugpferd::CII::Reader.new.read(File.read("invoice.xml"))
     class Reader
       include Mapping
+
+      TYPE_CODE_MAP = {
+        "381" => Model::CreditNote,
+        "384" => Model::CorrectedInvoice,
+        "389" => Model::SelfBilledInvoice,
+        "326" => Model::PartialInvoice,
+        "386" => Model::PrepaymentInvoice,
+      }.freeze
 
       # Parses a CII CrossIndustryInvoice XML string.
       #
       # @param xml_string [String] valid CII D16B XML
-      # @return [Model::Invoice]
+      # @return [Model::BillingDocument]
       # @raise [Nokogiri::XML::SyntaxError] if the XML is malformed
       def read(xml_string)
         doc = Nokogiri::XML(xml_string) { |config| config.strict }
@@ -27,7 +35,10 @@ module Zugpferd
 
       def build_invoice(root)
         settlement = root.at_xpath(SETTLEMENT, NS)
-        Model::Invoice.new(
+        type_code = text(root, INVOICE[:type_code])
+        model_class = TYPE_CODE_MAP.fetch(type_code, Model::Invoice)
+
+        model_class.new(
           number: text(root, INVOICE[:number]),
           issue_date: parse_cii_date(text(root, INVOICE[:issue_date])),
           due_date: parse_cii_date(settlement ? text(settlement, PAYMENT_TERMS_DUE_DATE) : nil),

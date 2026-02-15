@@ -8,21 +8,28 @@ Zugpferd can read both UBL 2.1 and UN/CEFACT CII invoices into the same data mod
 
 ## UBL Invoices
 
+The UBL reader automatically detects the document type from the root element and returns the appropriate model class:
+
 ```ruby
 xml = File.read("invoice_ubl.xml")
-invoice = Zugpferd::UBL::Reader.new.read(xml)
+doc = Zugpferd::UBL::Reader.new.read(xml)
+doc.class      # => Zugpferd::Model::Invoice or Zugpferd::Model::CreditNote
+doc.type_code  # => "380" for Invoice, "381" for CreditNote
 ```
 
 ## CII Invoices
 
+The CII reader maps the type code to the appropriate model class (e.g. `CreditNote` for 381, `CorrectedInvoice` for 384):
+
 ```ruby
 xml = File.read("invoice_cii.xml")
-invoice = Zugpferd::CII::Reader.new.read(xml)
+doc = Zugpferd::CII::Reader.new.read(xml)
+doc.class  # => Zugpferd::Model::Invoice, Zugpferd::Model::CreditNote, etc.
 ```
 
 ## Accessing Invoice Data
 
-After reading, you get a `Zugpferd::Model::Invoice` with all parsed fields:
+After reading, all document types share the same attributes:
 
 ```ruby
 # Header

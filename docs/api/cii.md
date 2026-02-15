@@ -13,14 +13,14 @@ reader = Zugpferd::CII::Reader.new
 invoice = reader.read(xml_string)
 ```
 
-### `read(xml_string) → Invoice`
+### `read(xml_string) → BillingDocument`
 
-Parses a CII D16B XML string and returns a `Zugpferd::Model::Invoice`.
+Parses a CII D16B XML string and returns the appropriate model class based on the type code (e.g. `CreditNote` for 381, `CorrectedInvoice` for 384). Falls back to `Invoice` for type code 380 and unknown codes.
 
 **Parameters:**
 - `xml_string` (`String`) — Valid CII CrossIndustryInvoice XML
 
-**Returns:** `Zugpferd::Model::Invoice`
+**Returns:** `Zugpferd::Model::Invoice`, `Zugpferd::Model::CreditNote`, or other `BillingDocument` subtype
 
 **Raises:** `Nokogiri::XML::SyntaxError` if the XML is malformed
 
@@ -33,10 +33,10 @@ xml_string = writer.write(invoice)
 
 ### `write(invoice) → String`
 
-Serializes a `Zugpferd::Model::Invoice` to a CII CrossIndustryInvoice XML string.
+Serializes a billing document to a CII CrossIndustryInvoice XML string.
 
 **Parameters:**
-- `invoice` (`Zugpferd::Model::Invoice`) — The invoice to serialize
+- `invoice` (`Zugpferd::Model::BillingDocument`) — The document to serialize
 
 **Returns:** `String` — UTF-8 encoded XML
 

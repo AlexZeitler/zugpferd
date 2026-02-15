@@ -6,15 +6,27 @@ outline: deep
 
 All model classes live under `Zugpferd::Model` and map to EN 16931 Business Groups (BGs) and Business Terms (BTs). Monetary values are `BigDecimal`, dates are `Date` objects.
 
+## BillingDocument Module
+
+All document types include the `BillingDocument` module which provides the shared attributes and initialization logic. Each class defines a `TYPE_CODE` constant that serves as the default for `type_code`.
+
+| Class | TYPE_CODE | Description |
+|-------|-----------|-------------|
+| `Model::Invoice` | `"380"` | Commercial Invoice |
+| `Model::CreditNote` | `"381"` | Credit Note |
+| `Model::CorrectedInvoice` | `"384"` | Corrected Invoice |
+| `Model::SelfBilledInvoice` | `"389"` | Self-billed Invoice |
+| `Model::PartialInvoice` | `"326"` | Partial Invoice |
+| `Model::PrepaymentInvoice` | `"386"` | Prepayment Invoice |
+
 ## Invoice (BG-0)
 
-The root document.
+Commercial Invoice, type code 380.
 
 ```ruby
 invoice = Zugpferd::Model::Invoice.new(
   number: "INV-001",       # BT-1 (required)
   issue_date: Date.today,  # BT-2 (required)
-  type_code: "380",        # BT-3 (default: "380")
   currency_code: "EUR"     # BT-5 (default: "EUR")
 )
 ```
@@ -24,7 +36,7 @@ invoice = Zugpferd::Model::Invoice.new(
 | `number` | BT-1 | `String` | Invoice number |
 | `issue_date` | BT-2 | `Date` | Issue date |
 | `due_date` | BT-9 | `Date` | Payment due date |
-| `type_code` | BT-3 | `String` | Invoice type code |
+| `type_code` | BT-3 | `String` | Invoice type code (see [supported types](#supported-type-codes)) |
 | `currency_code` | BT-5 | `String` | Document currency |
 | `buyer_reference` | BT-10 | `String` | Buyer reference |
 | `customization_id` | BT-24 | `String` | Specification identifier |
@@ -37,6 +49,18 @@ invoice = Zugpferd::Model::Invoice.new(
 | `tax_breakdown` | BG-23 | `TaxBreakdown` | VAT breakdown |
 | `monetary_totals` | BG-22 | `MonetaryTotals` | Document totals |
 | `payment_instructions` | BG-16 | `PaymentInstructions` | Payment information |
+
+### Other Document Types
+
+```ruby
+credit_note = Zugpferd::Model::CreditNote.new(number: "CN-001", issue_date: Date.today)
+corrected   = Zugpferd::Model::CorrectedInvoice.new(number: "C-001", issue_date: Date.today)
+self_billed = Zugpferd::Model::SelfBilledInvoice.new(number: "SB-001", issue_date: Date.today)
+partial     = Zugpferd::Model::PartialInvoice.new(number: "P-001", issue_date: Date.today)
+prepayment  = Zugpferd::Model::PrepaymentInvoice.new(number: "PP-001", issue_date: Date.today)
+```
+
+All document types share the same attributes (see table above). When using UBL, `CreditNote` produces a `<CreditNote>` root element with its own namespace. All other types use the standard `<Invoice>` element. In CII, the structure is identical for all type codes.
 
 ## TradeParty (BG-4 / BG-7)
 
