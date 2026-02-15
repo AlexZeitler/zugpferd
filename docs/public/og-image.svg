@@ -23,20 +23,26 @@
   <text x="600" y="240" font-family="system-ui, -apple-system, sans-serif" font-size="96" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="-2">Zugpferd</text>
 
   <!-- Subtitle -->
-  <text x="600" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="32" fill="#90caf9" text-anchor="middle">EN 16931 E-Invoicing for Ruby</text>
+  <text x="600" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="32" fill="#90caf9" text-anchor="middle">DIN EN 16931 E-Invoicing for Ruby</text>
 
   <!-- Tags -->
-  <rect x="310" y="380" width="100" height="36" rx="18" fill="#4fc3f7" opacity="0.15"/>
-  <text x="360" y="404" font-family="monospace" font-size="16" fill="#4fc3f7" text-anchor="middle">UBL 2.1</text>
+  <rect x="268" y="380" width="90" height="36" rx="18" fill="#4fc3f7" opacity="0.15"/>
+  <text x="313" y="404" font-family="monospace" font-size="16" fill="#4fc3f7" text-anchor="middle">UBL 2.1</text>
 
-  <rect x="430" y="380" width="80" height="36" rx="18" fill="#4fc3f7" opacity="0.15"/>
-  <text x="470" y="404" font-family="monospace" font-size="16" fill="#4fc3f7" text-anchor="middle">CII</text>
+  <rect x="370" y="380" width="70" height="36" rx="18" fill="#4fc3f7" opacity="0.15"/>
+  <text x="405" y="404" font-family="monospace" font-size="16" fill="#4fc3f7" text-anchor="middle">CII</text>
 
-  <rect x="530" y="380" width="130" height="36" rx="18" fill="#4fc3f7" opacity="0.15"/>
-  <text x="595" y="404" font-family="monospace" font-size="16" fill="#4fc3f7" text-anchor="middle">XRechnung</text>
+  <rect x="452" y="380" width="120" height="36" rx="18" fill="#4fc3f7" opacity="0.15"/>
+  <text x="512" y="404" font-family="monospace" font-size="16" fill="#4fc3f7" text-anchor="middle">XRechnung</text>
 
-  <rect x="680" y="380" width="120" height="36" rx="18" fill="#4fc3f7" opacity="0.15"/>
-  <text x="740" y="404" font-family="monospace" font-size="16" fill="#4fc3f7" text-anchor="middle">ZUGFeRD</text>
+  <rect x="584" y="380" width="110" height="36" rx="18" fill="#4fc3f7" opacity="0.15"/>
+  <text x="639" y="404" font-family="monospace" font-size="16" fill="#4fc3f7" text-anchor="middle">ZUGFeRD</text>
+
+  <rect x="706" y="380" width="95" height="36" rx="18" fill="#4fc3f7" opacity="0.15"/>
+  <text x="753" y="404" font-family="monospace" font-size="16" fill="#4fc3f7" text-anchor="middle">PDF/A-3</text>
+
+  <rect x="813" y="380" width="120" height="36" rx="18" fill="#4fc3f7" opacity="0.15"/>
+  <text x="873" y="404" font-family="monospace" font-size="16" fill="#4fc3f7" text-anchor="middle">Validation</text>
 
   <!-- Footer -->
   <text x="600" y="560" font-family="monospace" font-size="20" fill="#546e7a" text-anchor="middle">github.com/alexzeitler/zugpferd</text>
