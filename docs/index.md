@@ -28,6 +28,8 @@ features:
     details: Full support for both EN 16931 syntaxes — read, write and roundtrip any XRechnung or ZUGFeRD document.
   - title: Multiple Document Types
     details: Dedicated classes for Invoice, Credit Note, Corrected Invoice, Self-billed Invoice, Partial Invoice and Prepayment Invoice.
+  - title: PDF/A-3 Embedding
+    details: Create ZUGFeRD / Factur-X hybrid invoices by embedding XML into PDF/A-3 via Ghostscript.
   - title: XRechnung & ZUGFeRD
     details: Supports XRechnung and ZUGFeRD profiles — read any compliant document and convert between UBL and CII.
   - title: Pure Ruby Data Model

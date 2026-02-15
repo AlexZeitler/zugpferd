@@ -14,4 +14,27 @@ fi
 echo "    OK"
 
 echo ""
+echo "==> Downloading ZUGFeRD PDF artifacts..."
+ZUGFERD_DIR="$VENDOR_DIR/zugferd"
+mkdir -p "$ZUGFERD_DIR"
+
+GS_REF="master"
+GS_RAW="https://raw.githubusercontent.com/ArtifexSoftware/ghostpdl/$GS_REF"
+
+if [ ! -f "$ZUGFERD_DIR/zugferd.ps" ]; then
+  echo "    Downloading zugferd.ps..."
+  curl -fsSL "$GS_RAW/lib/zugferd.ps" -o "$ZUGFERD_DIR/zugferd.ps"
+else
+  echo "    zugferd.ps already present"
+fi
+
+if [ ! -f "$ZUGFERD_DIR/default_rgb.icc" ]; then
+  echo "    Downloading default_rgb.icc..."
+  curl -fsSL "$GS_RAW/iccprofiles/default_rgb.icc" -o "$ZUGFERD_DIR/default_rgb.icc"
+else
+  echo "    default_rgb.icc already present"
+fi
+echo "    OK"
+
+echo ""
 echo "All artifacts ready in: $VENDOR_DIR"

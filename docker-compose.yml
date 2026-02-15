@@ -9,5 +9,13 @@ services:
     tmpfs:
       - /tmp
 
+  verapdf:
+    image: verapdf/rest:latest
+    ports:
+      - "8080:8080"
+
+  mustang:
+    build: docker/mustang
+
 volumes:
   bundle_cache:

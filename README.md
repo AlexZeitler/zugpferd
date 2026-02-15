@@ -9,6 +9,7 @@ Built for Ruby developers integrating XRechnung or ZUGFeRD e-invoicing into thei
 - Syntax-agnostic data model based on EN 16931 Business Terms (BTs)
 - UBL 2.1 Reader & Writer (Invoice and Credit Note)
 - UN/CEFACT CII Reader & Writer
+- PDF/A-3 embedding via Ghostscript — create ZUGFeRD / Factur-X hybrid invoices
 - Supported document types:
   - `380` — Commercial Invoice
   - `381` — Credit Note (UBL: separate `<CreditNote>` root element)
@@ -101,6 +102,26 @@ xml = Zugpferd::UBL::Writer.new.write(credit_note)
 # Read CII, write as UBL
 invoice = Zugpferd::CII::Reader.new.read(cii_xml)
 ubl_xml = Zugpferd::UBL::Writer.new.write(invoice)
+```
+
+### Creating a ZUGFeRD / Factur-X PDF
+
+Requires [Ghostscript](https://ghostscript.com/) installed on the system.
+
+```ruby
+require "zugpferd"
+require "zugpferd/pdf"  # explicit opt-in
+
+xml = Zugpferd::CII::Writer.new.write(invoice)
+
+embedder = Zugpferd::PDF::Embedder.new
+embedder.embed(
+  pdf_path: "rechnung.pdf",
+  xml: xml,
+  output_path: "rechnung_zugferd.pdf",
+  version: "2p1",
+  conformance_level: "EN 16931"
+)
 ```
 
 ## Data Model
