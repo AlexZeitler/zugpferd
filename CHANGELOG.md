@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-02-19
+
+### Fixed
+
+- Set browser User-Agent on all curl requests in `bin/setup-schemas` to avoid throttling
+
 ## [0.3.2] - 2026-02-19
 
 ### Fixed

@@ -6,6 +6,8 @@ SCHEMAS_DIR="$VENDOR_DIR/schemas"
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
+CURL_UA="Mozilla/5.0"
+
 # --- Saxon HE (for Schematron validation) ---
 
 echo "==> Downloading Saxon HE..."
@@ -18,7 +20,7 @@ MAVEN="https://repo1.maven.org/maven2"
 
 if [ ! -f "$SAXON_DIR/saxon-he-$SAXON_VERSION.jar" ]; then
   echo "    Downloading saxon-he-$SAXON_VERSION.jar..."
-  curl -fsSL "$MAVEN/net/sf/saxon/Saxon-HE/$SAXON_VERSION/Saxon-HE-$SAXON_VERSION.jar" \
+  curl -fsSL -A "$CURL_UA" "$MAVEN/net/sf/saxon/Saxon-HE/$SAXON_VERSION/Saxon-HE-$SAXON_VERSION.jar" \
     -o "$SAXON_DIR/saxon-he-$SAXON_VERSION.jar"
 else
   echo "    saxon-he-$SAXON_VERSION.jar already present"
@@ -26,7 +28,7 @@ fi
 
 if [ ! -f "$SAXON_DIR/xmlresolver-$XMLRESOLVER_VERSION.jar" ]; then
   echo "    Downloading xmlresolver-$XMLRESOLVER_VERSION.jar..."
-  curl -fsSL "$MAVEN/org/xmlresolver/xmlresolver/$XMLRESOLVER_VERSION/xmlresolver-$XMLRESOLVER_VERSION.jar" \
+  curl -fsSL -A "$CURL_UA" "$MAVEN/org/xmlresolver/xmlresolver/$XMLRESOLVER_VERSION/xmlresolver-$XMLRESOLVER_VERSION.jar" \
     -o "$SAXON_DIR/xmlresolver-$XMLRESOLVER_VERSION.jar"
 else
   echo "    xmlresolver-$XMLRESOLVER_VERSION.jar already present"
@@ -41,7 +43,7 @@ UBL_DIR="$SCHEMAS_DIR/ubl"
 
 if [ ! -d "$UBL_DIR/xsd/maindoc" ]; then
   echo "    Downloading UBL-2.1.zip..."
-  curl -fsSL "http://docs.oasis-open.org/ubl/os-UBL-2.1/UBL-2.1.zip" \
+  curl -fsSL -A "$CURL_UA" "http://docs.oasis-open.org/ubl/os-UBL-2.1/UBL-2.1.zip" \
     -o "$TMP_DIR/UBL-2.1.zip"
   mkdir -p "$UBL_DIR/xsd"
   unzip -qo "$TMP_DIR/UBL-2.1.zip" "os-UBL-2.1/xsd/*" -d "$TMP_DIR"
@@ -60,7 +62,7 @@ CII_DIR="$SCHEMAS_DIR/cii"
 if [ ! -f "$CII_DIR/CrossIndustryInvoice_100pD16B.xsd" ]; then
   echo "    Downloading D16B SCRDM (Subset) CII..."
   CII_URL="https://unece.org/fileadmin/DAM/cefact/xml_schemas/D16B_SCRDM__Subset__CII.zip"
-  curl -fsSL "$CII_URL" -o "$TMP_DIR/cii-outer.zip" || {
+  curl -fsSL -A "$CURL_UA" "$CII_URL" -o "$TMP_DIR/cii-outer.zip" || {
     echo "    WARN: Could not download CII XSD from UN/CEFACT."
     echo "    Download manually from: $CII_URL"
     echo "    Extract the 'uncoupled' XSD files into $CII_DIR/"
@@ -92,7 +94,7 @@ CEN_BASE="https://github.com/ConnectingEurope/eInvoicing-EN16931/releases/downlo
 CEN_UBL_DIR="$SCHEMAS_DIR/schematron/cen/ubl"
 if [ ! -f "$CEN_UBL_DIR/xslt/EN16931-UBL-validation.xslt" ]; then
   echo "    Downloading en16931-ubl-$CEN_VERSION.zip..."
-  curl -fsSL "$CEN_BASE/en16931-ubl-$CEN_VERSION.zip" -o "$TMP_DIR/cen-ubl.zip"
+  curl -fsSL -A "$CURL_UA" "$CEN_BASE/en16931-ubl-$CEN_VERSION.zip" -o "$TMP_DIR/cen-ubl.zip"
   mkdir -p "$CEN_UBL_DIR"
   unzip -qo "$TMP_DIR/cen-ubl.zip" -d "$CEN_UBL_DIR"
 else
@@ -102,7 +104,7 @@ fi
 CEN_CII_DIR="$SCHEMAS_DIR/schematron/cen/cii"
 if [ ! -f "$CEN_CII_DIR/xslt/EN16931-CII-validation.xslt" ]; then
   echo "    Downloading en16931-cii-$CEN_VERSION.zip..."
-  curl -fsSL "$CEN_BASE/en16931-cii-$CEN_VERSION.zip" -o "$TMP_DIR/cen-cii.zip"
+  curl -fsSL -A "$CURL_UA" "$CEN_BASE/en16931-cii-$CEN_VERSION.zip" -o "$TMP_DIR/cen-cii.zip"
   mkdir -p "$CEN_CII_DIR"
   unzip -qo "$TMP_DIR/cen-cii.zip" -d "$CEN_CII_DIR"
 else
@@ -120,7 +122,7 @@ XR_DIR="$SCHEMAS_DIR/schematron/xrechnung"
 
 if [ ! -f "$XR_DIR/schematron/ubl/XRechnung-UBL-validation.xsl" ]; then
   echo "    Downloading xrechnung-$XRECHNUNG_SPEC_VERSION-schematron-$XRECHNUNG_SCHEMATRON_VERSION.zip..."
-  curl -fsSL "https://github.com/itplr-kosit/xrechnung-schematron/releases/download/release-$XRECHNUNG_SCHEMATRON_VERSION/xrechnung-$XRECHNUNG_SPEC_VERSION-schematron-$XRECHNUNG_SCHEMATRON_VERSION.zip" \
+  curl -fsSL -A "$CURL_UA" "https://github.com/itplr-kosit/xrechnung-schematron/releases/download/release-$XRECHNUNG_SCHEMATRON_VERSION/xrechnung-$XRECHNUNG_SPEC_VERSION-schematron-$XRECHNUNG_SCHEMATRON_VERSION.zip" \
     -o "$TMP_DIR/xrechnung-schematron.zip"
   mkdir -p "$XR_DIR"
   unzip -qo "$TMP_DIR/xrechnung-schematron.zip" -d "$XR_DIR"
@@ -154,14 +156,14 @@ GS_RAW="https://raw.githubusercontent.com/ArtifexSoftware/ghostpdl/$GS_REF"
 
 if [ ! -f "$ZUGFERD_DIR/zugferd.ps" ]; then
   echo "    Downloading zugferd.ps..."
-  curl -fsSL "$GS_RAW/lib/zugferd.ps" -o "$ZUGFERD_DIR/zugferd.ps"
+  curl -fsSL -A "$CURL_UA" "$GS_RAW/lib/zugferd.ps" -o "$ZUGFERD_DIR/zugferd.ps"
 else
   echo "    zugferd.ps already present"
 fi
 
 if [ ! -f "$ZUGFERD_DIR/default_rgb.icc" ]; then
   echo "    Downloading default_rgb.icc..."
-  curl -fsSL "$GS_RAW/iccprofiles/default_rgb.icc" -o "$ZUGFERD_DIR/default_rgb.icc"
+  curl -fsSL -A "$CURL_UA" "$GS_RAW/iccprofiles/default_rgb.icc" -o "$ZUGFERD_DIR/default_rgb.icc"
 else
   echo "    default_rgb.icc already present"
 fi
