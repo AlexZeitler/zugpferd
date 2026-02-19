@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = "zugpferd"
-  spec.version       = "0.3.0"
+  spec.version       = "0.3.1"
   spec.authors       = ["Alexander Zeitler"]
   spec.summary       = "XRechnung & ZUGFeRD e-invoicing library for Ruby (UBL + CII)"
   spec.description   = "Read, write and convert XRechnung and ZUGFeRD electronic invoices " \
@@ -19,7 +19,8 @@ Gem::Specification.new do |spec|
     "bug_tracker_uri"   => "https://github.com/alexzeitler/zugpferd/issues",
   }
 
-  spec.files = Dir["lib/**/*.rb"] + Dir["vendor/zugferd/**/*"]
+  spec.files = Dir["lib/**/*.rb"] + Dir["vendor/zugferd/**/*"] + ["bin/setup-schemas"]
+  spec.executables = ["setup-schemas"]
   spec.require_paths = ["lib"]
 
   spec.add_dependency "nokogiri", "~> 1.16"

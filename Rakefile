@@ -30,6 +30,7 @@ end
 desc "Validate a single XML file (FILE=path.xml)"
 task :validate do
   require "zugpferd"
+  require "zugpferd/validation"
   file = ENV.fetch("FILE")
   xml = File.read(file)
   errors = Zugpferd::Validation::SchematronValidator.new(
