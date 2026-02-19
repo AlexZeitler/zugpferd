@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-02-19
+
+### Fixed
+
+- Remove `spec.executables` — `bin/setup-schemas` is a project-local bash script, not a gem executable
+
 ## [0.3.1] - 2026-02-19
 
 ### Added
