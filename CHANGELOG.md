@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-02-19
+
+### Added
+
+- `bin/setup-schemas` is now included in the gem as an executable
+
+### Fixed
+
+- Missing `require "zugpferd/validation"` in Rakefile `validate` task
+
 ## [0.3.0] - 2026-02-15
 
 ### Added
