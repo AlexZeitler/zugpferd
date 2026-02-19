@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-02-19
+
+### Fixed
+
+- `bin/setup-schemas`: use `$(pwd)/vendor` instead of path relative to script location
+- `bin/setup-schemas`: fix UBL ZIP extraction path (`xsd/*` instead of `os-UBL-2.1/xsd/*`)
+- `bin/setup-schemas`: download CII D16B XSD from GitHub release asset (unece.org blocked by Cloudflare)
+- `bin/setup-schemas`: flatten deeply nested CII XSD files after extraction
+- `bin/setup-schemas`: fix XRechnung Schematron release tag (`v2.5.0` instead of `release-2.5.0`)
+
 ## [0.3.3] - 2026-02-19
 
 ### Fixed

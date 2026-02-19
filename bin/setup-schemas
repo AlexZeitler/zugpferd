@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VENDOR_DIR="$(cd "$(dirname "$0")/../vendor" && pwd)"
+VENDOR_DIR="$(pwd)/vendor"
 SCHEMAS_DIR="$VENDOR_DIR/schemas"
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
 CURL_UA="Mozilla/5.0"
+ZUGPFERD_REPO="https://github.com/alexzeitler/zugpferd"
 
 # --- Saxon HE (for Schematron validation) ---
 
@@ -45,9 +46,8 @@ if [ ! -d "$UBL_DIR/xsd/maindoc" ]; then
   echo "    Downloading UBL-2.1.zip..."
   curl -fsSL -A "$CURL_UA" "http://docs.oasis-open.org/ubl/os-UBL-2.1/UBL-2.1.zip" \
     -o "$TMP_DIR/UBL-2.1.zip"
-  mkdir -p "$UBL_DIR/xsd"
-  unzip -qo "$TMP_DIR/UBL-2.1.zip" "os-UBL-2.1/xsd/*" -d "$TMP_DIR"
-  cp -r "$TMP_DIR/os-UBL-2.1/xsd/"* "$UBL_DIR/xsd/"
+  mkdir -p "$UBL_DIR"
+  unzip -qo "$TMP_DIR/UBL-2.1.zip" "xsd/*" -d "$UBL_DIR"
 else
   echo "    UBL XSD already present"
 fi
@@ -61,23 +61,31 @@ CII_DIR="$SCHEMAS_DIR/cii"
 
 if [ ! -f "$CII_DIR/CrossIndustryInvoice_100pD16B.xsd" ]; then
   echo "    Downloading D16B SCRDM (Subset) CII..."
-  CII_URL="https://unece.org/fileadmin/DAM/cefact/xml_schemas/D16B_SCRDM__Subset__CII.zip"
-  curl -fsSL -A "$CURL_UA" "$CII_URL" -o "$TMP_DIR/cii-outer.zip" || {
-    echo "    WARN: Could not download CII XSD from UN/CEFACT."
-    echo "    Download manually from: $CII_URL"
-    echo "    Extract the 'uncoupled' XSD files into $CII_DIR/"
-  }
+  CII_URL="$ZUGPFERD_REPO/releases/download/v0.3.3/D16B_SCRDM__Subset__CII.zip"
+  curl -fsSL -A "$CURL_UA" "$CII_URL" -o "$TMP_DIR/cii-outer.zip"
 
-  if [ -f "$TMP_DIR/cii-outer.zip" ]; then
-    mkdir -p "$CII_DIR"
-    unzip -qo "$TMP_DIR/cii-outer.zip" -d "$TMP_DIR/cii-outer"
-    # The outer ZIP contains nested ZIPs — extract the uncoupled one
-    UNCOUPLED_ZIP=$(find "$TMP_DIR/cii-outer" -name "*uncoupled.zip" -type f | head -1)
-    if [ -n "$UNCOUPLED_ZIP" ]; then
-      unzip -qo "$UNCOUPLED_ZIP" -d "$CII_DIR"
+  mkdir -p "$CII_DIR"
+  unzip -qo "$TMP_DIR/cii-outer.zip" -d "$TMP_DIR/cii-outer"
+  # The outer ZIP contains nested ZIPs — extract the uncoupled one
+  UNCOUPLED_ZIP=$(find "$TMP_DIR/cii-outer" -name "*uncoupled.zip" -type f | head -1)
+  if [ -n "$UNCOUPLED_ZIP" ]; then
+    unzip -qo "$UNCOUPLED_ZIP" -d "$TMP_DIR/cii-uncoupled"
+    # XSDs are nested deep — move them flat into CII_DIR
+    XSD_DIR=$(find "$TMP_DIR/cii-uncoupled" -name "CrossIndustryInvoice_100pD16B.xsd" -type f -exec dirname {} \; | head -1)
+    if [ -n "$XSD_DIR" ]; then
+      cp -r "$XSD_DIR"/* "$CII_DIR/"
+      # Copy codelist XSDs (relative imports from main XSD)
+      CODELIST_DIR=$(find "$TMP_DIR/cii-uncoupled" -type d -name "codelist" | head -1)
+      if [ -n "$CODELIST_DIR" ]; then
+        cp -r "$CODELIST_DIR" "$CII_DIR/"
+      fi
     else
-      echo "    WARN: Could not find uncoupled ZIP inside CII archive"
+      echo "    ERROR: Could not find CrossIndustryInvoice_100pD16B.xsd in extracted archive"
+      exit 1
     fi
+  else
+    echo "    ERROR: Could not find uncoupled ZIP inside CII archive"
+    exit 1
   fi
 else
   echo "    CII XSD already present"
@@ -122,7 +130,7 @@ XR_DIR="$SCHEMAS_DIR/schematron/xrechnung"
 
 if [ ! -f "$XR_DIR/schematron/ubl/XRechnung-UBL-validation.xsl" ]; then
   echo "    Downloading xrechnung-$XRECHNUNG_SPEC_VERSION-schematron-$XRECHNUNG_SCHEMATRON_VERSION.zip..."
-  curl -fsSL -A "$CURL_UA" "https://github.com/itplr-kosit/xrechnung-schematron/releases/download/release-$XRECHNUNG_SCHEMATRON_VERSION/xrechnung-$XRECHNUNG_SPEC_VERSION-schematron-$XRECHNUNG_SCHEMATRON_VERSION.zip" \
+  curl -fsSL -A "$CURL_UA" "https://github.com/itplr-kosit/xrechnung-schematron/releases/download/v$XRECHNUNG_SCHEMATRON_VERSION/xrechnung-$XRECHNUNG_SPEC_VERSION-schematron-$XRECHNUNG_SCHEMATRON_VERSION.zip" \
     -o "$TMP_DIR/xrechnung-schematron.zip"
   mkdir -p "$XR_DIR"
   unzip -qo "$TMP_DIR/xrechnung-schematron.zip" -d "$XR_DIR"
