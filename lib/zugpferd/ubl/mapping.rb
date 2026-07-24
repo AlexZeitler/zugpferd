@@ -1,24 +1,121 @@
 module Zugpferd
   module UBL
     module Mapping
-      NS = {
-        "ubl" => "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2",
-        "cac" => "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2",
-        "cbc" => "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2",
-      }.freeze
+      class Document
+        def xml_additional_namespaces
+          {}
+        end
+      end
 
-      CN_NS = {
-        "cn" => "urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2",
-        "cac" => "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2",
-        "cbc" => "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2",
-      }.freeze
+      class Invoice < Document
+        class << self
+          def model_class
+            Model::Invoice
+          end
+
+          def xml_namespaces
+            {
+              "xmlns" => "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2",
+              "xmlns:cac" => "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2",
+              "xmlns:cbc" => "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2",
+            }.freeze
+          end
+
+          def xml_root_name
+            "Invoice"
+          end
+
+          def type_code_name
+            "cbc:InvoiceTypeCode"
+          end
+
+          def line_name
+            "cac:InvoiceLine"
+          end
+
+          def line_quantity_name
+            "cbc:InvoicedQuantity"
+          end
+
+          def line_unit_code_name
+            "cbc:InvoicedQuantity/@unitCode"
+          end
+        end
+      end
+
+      class CorrectedInvoice < Invoice
+        class << self
+          def model_class
+            Model::CorrectedInvoice
+          end
+        end
+      end
+
+      class PartialInvoice < Invoice
+        class << self
+          def model_class
+            Model::PartialInvoice
+          end
+        end
+      end
+
+      class PrepaymentInvoice < Invoice
+        class << self
+          def model_class
+            Model::PrepaymentInvoice
+          end
+        end
+      end
+
+      class SelfBilledInvoice < Invoice
+        class << self
+          def model_class
+            Model::SelfBilledInvoice
+          end
+        end
+      end
+
+      class CreditNote < Document
+        class << self
+          def model_class
+            Model::CreditNote
+          end
+
+          def xml_namespaces
+            {
+              "xmlns" => "urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2",
+              "xmlns:cac" => "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2",
+              "xmlns:cbc" => "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2",
+            }.freeze
+          end
+
+          def xml_root_name
+            "CreditNote"
+          end
+
+          def type_code_name
+            "cbc:CreditNoteTypeCode"
+          end
+
+          def line_name
+            "cac:CreditNoteLine"
+          end
+
+          def line_quantity_name
+            "cbc:CreditedQuantity"
+          end
+
+          def line_unit_code_name
+            "cbc:CreditedQuantity/@unitCode"
+          end
+        end
+      end
 
       # Invoice (BG-0)
       INVOICE = {
         number:             "cbc:ID",
         issue_date:         "cbc:IssueDate",
         due_date:           "cbc:DueDate",
-        type_code:          "cbc:InvoiceTypeCode",
         currency_code:      "cbc:DocumentCurrencyCode",
         buyer_reference:    "cbc:BuyerReference",
         customization_id:   "cbc:CustomizationID",
@@ -116,11 +213,8 @@ module Zugpferd
       }.freeze
 
       # InvoiceLine (BG-25)
-      INVOICE_LINE = "cac:InvoiceLine"
       LINE = {
         id:                    "cbc:ID",
-        invoiced_quantity:     "cbc:InvoicedQuantity",
-        unit_code:             "cbc:InvoicedQuantity/@unitCode",
         line_extension_amount: "cbc:LineExtensionAmount",
         note:                  "cbc:Note",
       }.freeze
@@ -140,6 +234,21 @@ module Zugpferd
       PRICE_FIELDS = {
         amount: "cbc:PriceAmount",
       }.freeze
+
+      extend self
+
+      # @return [Array<Class>] List of document type metadata classes
+      def document_types
+        descendants_of(Document)
+      end
+
+      private
+
+      def descendants_of(type)
+        type.subclasses.flat_map do |klass|
+          [klass] + descendants_of(klass)
+        end
+      end
     end
   end
 end

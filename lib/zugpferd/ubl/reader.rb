@@ -20,18 +20,25 @@ module Zugpferd
       def read(xml_string)
         doc = Nokogiri::XML(xml_string) { |config| config.strict }
         root = doc.root
-        @credit_note = root.name == "CreditNote"
-        @ns = @credit_note ? CN_NS : NS
+
+        @document_type = detect_document_type(doc)
+        @ns = @document_type.xml_namespaces
+
         build_invoice(root)
       end
 
       private
 
-      def build_invoice(root)
-        type_code_element = @credit_note ? "cbc:CreditNoteTypeCode" : INVOICE[:type_code]
-        line_element = @credit_note ? "cac:CreditNoteLine" : INVOICE_LINE
+      def detect_document_type(doc)
+        root_name = doc.root.name
 
-        model_class = @credit_note ? Model::CreditNote : Model::Invoice
+        Mapping.document_types.detect { it.xml_root_name == root_name }
+      end
+
+      def build_invoice(root)
+        type_code_element = @document_type.type_code_name
+        line_element = @document_type.line_name
+        model_class = @document_type.model_class
 
         delivery_node = root.at_xpath(DELIVERY, @ns)
 
@@ -166,8 +173,8 @@ module Zugpferd
         item_node = node.at_xpath(ITEM, @ns)
         price_node = node.at_xpath(PRICE, @ns)
 
-        quantity_element = @credit_note ? "cbc:CreditedQuantity" : LINE[:invoiced_quantity]
-        unit_code_element = @credit_note ? "cbc:CreditedQuantity/@unitCode" : LINE[:unit_code]
+        quantity_element = @document_type.line_quantity_name
+        unit_code_element = @document_type.line_unit_code_name
 
         Model::LineItem.new(
           id: text(node, LINE[:id]),

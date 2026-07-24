@@ -15,20 +15,11 @@ module Zugpferd
       # @param document [Model::BillingDocument] the document to serialize
       # @return [String] UTF-8 encoded XML string
       def write(document)
-        @credit_note = document.type_code == "381"
+        @document_type = detect_document_type(document)
+
         builder = Nokogiri::XML::Builder.new(encoding: "UTF-8") do |xml|
-          if @credit_note
-            xml.CreditNote(xmlns: CN_NS["cn"],
-                           "xmlns:cac" => CN_NS["cac"],
-                           "xmlns:cbc" => CN_NS["cbc"]) do
-              build_document(xml, document)
-            end
-          else
-            xml.Invoice(xmlns: NS["ubl"],
-                        "xmlns:cac" => NS["cac"],
-                        "xmlns:cbc" => NS["cbc"]) do
-              build_document(xml, document)
-            end
+          xml.send(@document_type.xml_root_name, @document_type.xml_namespaces) do
+            build_document(xml, document)
           end
         end
         builder.to_xml
@@ -36,17 +27,17 @@ module Zugpferd
 
       private
 
+      def detect_document_type(model)
+        Mapping.document_types.detect { it.model_class == model.class }
+      end
+
       def build_document(xml, doc)
         xml["cbc"].CustomizationID doc.customization_id if doc.customization_id
         xml["cbc"].ProfileID doc.profile_id if doc.profile_id
         xml["cbc"].ID doc.number
         xml["cbc"].IssueDate doc.issue_date.to_s
         xml["cbc"].DueDate doc.due_date.to_s if doc.due_date
-        if @credit_note
-          xml["cbc"].CreditNoteTypeCode doc.type_code
-        else
-          xml["cbc"].InvoiceTypeCode doc.type_code
-        end
+        xml.send(@document_type.type_code_name, doc.type_code)
         xml["cbc"].Note doc.note if doc.note
         xml["cbc"].DocumentCurrencyCode doc.currency_code
         xml["cbc"].BuyerReference doc.buyer_reference if doc.buyer_reference
@@ -256,13 +247,13 @@ module Zugpferd
       end
 
       def build_line(xml, line, currency_code)
-        line_method = @credit_note ? :CreditNoteLine : :InvoiceLine
-        quantity_method = @credit_note ? :CreditedQuantity : :InvoicedQuantity
+        line_method = @document_type.line_name
+        quantity_method = @document_type.line_quantity_name
 
-        xml["cac"].send(line_method) do
+        xml.send(line_method) do
           xml["cbc"].ID line.id
           xml["cbc"].Note line.note if line.note
-          xml["cbc"].send(quantity_method, format_decimal(line.invoiced_quantity),
+          xml.send(quantity_method, format_decimal(line.invoiced_quantity),
                           unitCode: line.unit_code)
           xml["cbc"].LineExtensionAmount(format_decimal(line.line_extension_amount),
                                          currencyID: currency_code)
