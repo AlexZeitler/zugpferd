@@ -28,3 +28,6 @@ jobs:
 
       - name: Run tests
         run: bundle exec rake test
+
+      - name: Code style
+        run: bundle exec rubocop

@@ -179,6 +179,7 @@ The model maps to the Business Groups of EN 16931:
 bundle install
 bin/setup-schemas    # Downloads XSD schemas, CEN Schematron, XRechnung test suite
 bundle exec rake test
+bundle exec rubocop
 ```
 
 ## License
