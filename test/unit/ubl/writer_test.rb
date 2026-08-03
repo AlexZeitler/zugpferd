@@ -53,6 +53,16 @@ class UBLWriterTest < Minitest::Test
     assert_equal "201/113/40209", read.seller.tax_registration_identifier
   end
 
+  def test_payment_account_name_survives_roundtrip
+    invoice = invoice_with_due_date
+    invoice.payment_instructions.account_id = "DE89370400440532013000"
+    invoice.payment_instructions.account_name = "Seller Clearing"
+    payment = Zugpferd::UBL::Reader.new.read(Zugpferd::UBL::Writer.new.write(invoice)).payment_instructions
+
+    assert_equal "DE89370400440532013000", payment.account_id
+    assert_equal "Seller Clearing", payment.account_name
+  end
+
   def test_writes_deliver_to_address_after_delivery_date
     delivery = write(invoice_with_deliver_to_address).at_xpath("/ubl:Invoice/cac:Delivery", UBL_NS)
     address = delivery.at_xpath("cac:DeliveryLocation/cac:Address", UBL_NS)

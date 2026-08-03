@@ -395,6 +395,15 @@ class CIIWriterTest < Minitest::Test
     assert_equal "DE89370400440532013000", text(means, "ram:PayeePartyCreditorFinancialAccount/ram:IBANID")
   end
 
+  def test_payment_account_name_survives_roundtrip
+    invoice = full_invoice
+    invoice.payment_instructions.account_name = "Seller Clearing"
+    payment = Zugpferd::CII::Reader.new.read(Zugpferd::CII::Writer.new.write(invoice)).payment_instructions
+
+    assert_equal "DE89370400440532013000", payment.account_id
+    assert_equal "Seller Clearing", payment.account_name
+  end
+
   def test_writes_tax_subtotal
     tax = write(full_invoice).at_xpath("#{SETTLEMENT}/ram:ApplicableTradeTax", CII_NS)
 

@@ -209,6 +209,7 @@ module Zugpferd
           if payment.account_id
             xml["cac"].PayeeFinancialAccount do
               xml["cbc"].ID payment.account_id
+              xml["cbc"].Name payment.account_name if payment.account_name
             end
           end
           if payment.mandate_reference

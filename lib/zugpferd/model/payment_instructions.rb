@@ -6,6 +6,7 @@ module Zugpferd
       # @return [String] BT-81 Payment means type code
       # @return [String, nil] BT-83 Remittance information
       # @return [String, nil] BT-84 Payment account identifier (IBAN)
+      # @return [String, nil] BT-85 Payment account name
       # @return [String, nil] BT-20 Payment terms
       # @return [String, nil] BT-87 Payment card primary account number
       # @return [String, nil] BT-88 Payment card holder name
@@ -13,7 +14,7 @@ module Zugpferd
       # @return [String, nil] BT-89 Mandate reference identifier
       # @return [String, nil] BT-90 Bank assigned creditor identifier
       # @return [String, nil] BT-91 Debited account identifier
-      attr_accessor :payment_means_code, :payment_id, :account_id, :note,
+      attr_accessor :payment_means_code, :payment_id, :account_id, :account_name, :note,
                     :card_account_id, :card_holder_name, :card_network_id,
                     :mandate_reference, :creditor_reference_id,
                     :debited_account_id
