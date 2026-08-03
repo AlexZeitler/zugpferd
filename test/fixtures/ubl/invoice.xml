@@ -54,6 +54,7 @@
     <cbc:PaymentMeansCode>58</cbc:PaymentMeansCode>
     <cac:PayeeFinancialAccount>
       <cbc:ID>DE89370400440532013000</cbc:ID>
+      <cbc:Name>Test Seller Clearing</cbc:Name>
     </cac:PayeeFinancialAccount>
   </cac:PaymentMeans>
   <cac:TaxTotal>

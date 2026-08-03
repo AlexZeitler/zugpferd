@@ -242,6 +242,7 @@ payment.account_id = "DE89370400440532013000"
 | `payment_means_code` | BT-81 | `String` | Payment means code (required) |
 | `payment_id` | BT-83 | `String` | Payment reference |
 | `account_id` | BT-84 | `String` | IBAN |
+| `account_name` | BT-85 | `String` | Payment account name |
 | `note` | BT-20 | `String` | Payment terms |
 | `card_account_id` | BT-87 | `String` | Payment card number |
 | `card_holder_name` | BT-88 | `String` | Card holder name |

@@ -258,6 +258,7 @@ module Zugpferd
           if payment.account_id
             xml["ram"].PayeePartyCreditorFinancialAccount do
               xml["ram"].IBANID payment.account_id
+              xml["ram"].AccountName payment.account_name if payment.account_name
             end
           end
         end

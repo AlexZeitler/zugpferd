@@ -92,6 +92,7 @@ module Zugpferd
       PAYMENT = {
         payment_means_code: "ram:TypeCode",
         account_id:         "ram:PayeePartyCreditorFinancialAccount/ram:IBANID",
+        account_name:       "ram:PayeePartyCreditorFinancialAccount/ram:AccountName",
         card_account_id:    "ram:ApplicableTradeSettlementFinancialCard/ram:ID",
         card_holder_name:   "ram:ApplicableTradeSettlementFinancialCard/ram:CardholderName",
         debited_account_id: "ram:PayerPartyDebtorFinancialAccount/ram:IBANID",
