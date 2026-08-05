@@ -21,6 +21,9 @@ module Zugpferd
         note:             "#{DOCUMENT}/ram:IncludedNote/ram:Content",
         customization_id: "#{CONTEXT}/ram:GuidelineSpecifiedDocumentContextParameter/ram:ID",
         profile_id:       "#{CONTEXT}/ram:BusinessProcessSpecifiedDocumentContextParameter/ram:ID",
+        project_reference:     "#{TRANSACTION}/ram:ApplicableHeaderTradeAgreement/ram:SpecifiedProcuringProject/ram:ID",
+        contract_reference:    "#{TRANSACTION}/ram:ApplicableHeaderTradeAgreement/ram:ContractReferencedDocument/ram:IssuerAssignedID",
+        purchase_order_reference: "#{TRANSACTION}/ram:ApplicableHeaderTradeAgreement/ram:BuyerOrderReferencedDocument/ram:IssuerAssignedID",
       }.freeze
 
       # Delivery (BG-13)

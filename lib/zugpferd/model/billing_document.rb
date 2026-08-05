@@ -21,6 +21,9 @@ module Zugpferd
       # @return [Date, nil] BT-72 Actual delivery date
       # @return [String, nil] BT-10 Buyer reference
       # @return [String, nil] BT-24 Specification identifier
+      # @return [String, nil] BT-11 Project reference
+      # @return [String, nil] BT-12 Contract reference
+      # @return [String, nil] BT-13 Purchase order reference
       # @return [String, nil] BT-23 Business process type
       # @return [String, nil] BT-22 Invoice note
       # @return [TradeParty, nil] BG-4 Seller party
@@ -32,7 +35,9 @@ module Zugpferd
       # @return [Array<AllowanceCharge>] BG-20/BG-21 Document-level allowances and charges
       attr_accessor :number, :issue_date, :due_date, :type_code,
                     :currency_code, :delivery_date, :buyer_reference,
-                    :customization_id, :profile_id, :note, :seller, :buyer,
+                    :customization_id, :profile_id, :note,
+                    :project_reference, :contract_reference, :purchase_order_reference,
+                    :seller, :buyer,
                     :line_items, :tax_breakdown, :monetary_totals,
                     :payment_instructions, :allowance_charges
 
