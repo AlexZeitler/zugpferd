@@ -267,6 +267,17 @@ class CIIWriterTest < Minitest::Test
     assert_equal "0.02", text(summation, "ram:RoundingAmount")
   end
 
+  def test_writes_rounding_amount_before_grand_total
+    invoice = full_invoice
+    invoice.monetary_totals.payable_rounding_amount = BigDecimal("0.02")
+    summation = write(invoice).at_xpath("#{SETTLEMENT}/ram:SpecifiedTradeSettlementHeaderMonetarySummation", CII_NS)
+
+    assert_equal %w[
+      LineTotalAmount ChargeTotalAmount AllowanceTotalAmount TaxBasisTotalAmount
+      TaxTotalAmount RoundingAmount GrandTotalAmount TotalPrepaidAmount DuePayableAmount
+    ], child_names(summation)
+  end
+
   def test_omits_tax_total_without_tax_breakdown
     invoice = minimal_invoice
     invoice.monetary_totals = MonetaryTotals.new(
