@@ -1,4 +1,6 @@
+vendor/schemas/
 vendor/testsuite/
+vendor/zugferd/
 .bundle/
 Gemfile.lock
 pkg/
