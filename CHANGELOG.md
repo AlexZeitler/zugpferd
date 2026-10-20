@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- CII writer: write `RoundingAmount` (BT-114) before `GrandTotalAmount` as required by the CII D16B XSD
+
+### Changed
+
+- `vendor/schemas/` is no longer tracked in git; run `bin/setup-schemas` after cloning
+
 ## [0.3.4] - 2026-02-19
 
 ### Fixed
