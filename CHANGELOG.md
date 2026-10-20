@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.3.5] - 2026-10-20
+
 ### Fixed
 
 - CII writer: write `RoundingAmount` (BT-114) before `GrandTotalAmount` as required by the CII D16B XSD
