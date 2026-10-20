@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CreditNote xmlns="urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
-  <cbc:CustomizationID>urn:oasis:names:specification:ubl:xpath:CreditNote-2.0:sbs-1.0-draft</cbc:CustomizationID>
-  <cbc:ProfileID>bpid:urn:oasis:names:draft:bpss:ubl-2-sbs-credit-notification-draft</cbc:ProfileID>
+  <cbc:CustomizationID>urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0</cbc:CustomizationID>
+  <cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID>
   <cbc:ID>TEST-001</cbc:ID>
   <cbc:IssueDate>2024-01-15</cbc:IssueDate>
   <cbc:DueDate>2024-01-25</cbc:DueDate>

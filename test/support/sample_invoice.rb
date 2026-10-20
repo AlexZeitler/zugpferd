@@ -6,8 +6,8 @@ module SampleInvoice
       due_date: Date.new(2024, 1, 25),
     )
 
-    invoice.customization_id = "urn:oasis:names:specification:ubl:xpath:CreditNote-2.0:sbs-1.0-draft"
-    invoice.profile_id = "bpid:urn:oasis:names:draft:bpss:ubl-2-sbs-credit-notification-draft"
+    invoice.customization_id = "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0"
+    invoice.profile_id = "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0"
 
     set_sample_attributes(invoice)
   end

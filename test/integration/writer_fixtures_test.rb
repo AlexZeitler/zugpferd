@@ -1,6 +1,12 @@
 require "test_helper"
 
-class EmbedderTest < Minitest::Test
+# Compares the writer output against the snapshot fixtures in test/fixtures/
+# and validates it with the EN 16931 Schematron rules (requires Java/Saxon).
+#
+# To regenerate the fixtures after an intended change of the writer output, run:
+#
+#   WRITE_FIXTURES=1 bundle exec rake test:integration
+class WriterFixturesTest < Minitest::Test
   include SampleInvoice
   include ValidatorHelper
 
@@ -19,7 +25,7 @@ class EmbedderTest < Minitest::Test
   private
 
   def assert_match_fixture(filename, xml, rule_set:)
-    path = "test/fixtures/#{filename}"
+    path = File.expand_path("../fixtures/#{filename}", __dir__)
 
     File.write(path, xml) if ENV["WRITE_FIXTURES"]
 
