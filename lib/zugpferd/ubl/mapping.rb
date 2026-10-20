@@ -24,6 +24,9 @@ module Zugpferd
         customization_id:   "cbc:CustomizationID",
         profile_id:         "cbc:ProfileID",
         note:               "cbc:Note",
+        project_reference:        "cac:ProjectReference/cbc:ID",
+        contract_reference:       "cac:ContractReference/cbc:ID",
+        purchase_order_reference: "cac:OrderReference/cbc:ID",
       }.freeze
 
       # Delivery (BG-13)
