@@ -4,7 +4,6 @@
   <cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID>
   <cbc:ID>TEST-001</cbc:ID>
   <cbc:IssueDate>2024-01-15</cbc:IssueDate>
-  <cbc:DueDate>2024-01-25</cbc:DueDate>
   <cbc:CreditNoteTypeCode>381</cbc:CreditNoteTypeCode>
   <cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
   <cbc:BuyerReference>BUYER-REF</cbc:BuyerReference>
@@ -52,6 +51,7 @@
   </cac:AccountingCustomerParty>
   <cac:PaymentMeans>
     <cbc:PaymentMeansCode>58</cbc:PaymentMeansCode>
+    <cbc:PaymentDueDate>2024-01-25</cbc:PaymentDueDate>
     <cac:PayeeFinancialAccount>
       <cbc:ID>DE89370400440532013000</cbc:ID>
     </cac:PayeeFinancialAccount>
