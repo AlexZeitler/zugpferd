@@ -54,6 +54,7 @@ module Zugpferd
           buyer: build_party(root.at_xpath(BUYER, @ns)),
           line_items: root.xpath(line_element, @ns).map { |n| build_line_item(n) },
           allowance_charges: root.xpath(ALLOWANCE_CHARGE, @ns).map { |n| build_allowance_charge(n) },
+          preceding_invoices: root.xpath(PRECEDING_INVOICE, @ns).map { |n| build_preceding_invoice(n) },
           tax_breakdown: build_tax_breakdown(root.at_xpath(TAX_TOTAL, @ns)),
           monetary_totals: build_monetary_totals(root.at_xpath(MONETARY_TOTAL, @ns)),
           payment_instructions: build_payment_instructions(root),
@@ -204,6 +205,13 @@ module Zugpferd
 
         Model::Price.new(
           amount: text(node, PRICE_FIELDS[:amount]),
+        )
+      end
+
+      def build_preceding_invoice(node)
+        Model::PrecedingInvoice.new(
+          number: text(node, PRECEDING_INVOICE_FIELDS[:number]),
+          issue_date: parse_date(text(node, PRECEDING_INVOICE_FIELDS[:issue_date])),
         )
       end
 

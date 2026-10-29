@@ -49,6 +49,7 @@ invoice = Zugpferd::Model::Invoice.new(
 | `buyer` | BG-7 | `TradeParty` | Buyer party |
 | `line_items` | BG-25 | `Array<LineItem>` | Invoice lines |
 | `allowance_charges` | BG-20/21 | `Array<AllowanceCharge>` | Document-level allowances/charges |
+| `preceding_invoices` | BG-3 | `Array<PrecedingInvoice>` | Preceding invoice references (CII carries only the first) |
 | `tax_breakdown` | BG-23 | `TaxBreakdown` | VAT breakdown |
 | `monetary_totals` | BG-22 | `MonetaryTotals` | Document totals |
 | `payment_instructions` | BG-16 | `PaymentInstructions` | Payment information |
@@ -244,6 +245,20 @@ payment.account_id = "DE89370400440532013000"
 | `mandate_reference` | BT-89 | `String` | Direct debit mandate reference |
 | `creditor_reference_id` | BT-90 | `String` | Bank assigned creditor ID |
 | `debited_account_id` | BT-91 | `String` | Debited account IBAN |
+
+## PrecedingInvoice (BG-3)
+
+```ruby
+invoice.preceding_invoices << Zugpferd::Model::PrecedingInvoice.new(
+  number: "RE-2023-001",
+  issue_date: Date.new(2023, 12, 1)
+)
+```
+
+| Attribute | BT | Type | Description |
+|-----------|-----|------|-------------|
+| `number` | BT-25 | `String` | Preceding invoice number (required) |
+| `issue_date` | BT-26 | `Date` | Preceding invoice issue date |
 
 ## AllowanceCharge (BG-20 / BG-21)
 

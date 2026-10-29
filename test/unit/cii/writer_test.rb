@@ -216,6 +216,42 @@ class CIIWriterTest < Minitest::Test
     assert_equal Date.new(2024, 6, 30), read.invoicing_period_end_date
   end
 
+  def test_writes_preceding_invoice_after_monetary_summation
+    invoice = full_invoice
+    invoice.preceding_invoices << PrecedingInvoice.new(number: "RE-0", issue_date: Date.new(2024, 5, 1))
+    settlement = write(invoice).at_xpath(SETTLEMENT, CII_NS)
+    ref = settlement.at_xpath("ram:InvoiceReferencedDocument", CII_NS)
+    date = ref.at_xpath("ram:FormattedIssueDateTime/qdt:DateTimeString", CII_NS.merge("qdt" => "urn:un:unece:uncefact:data:standard:QualifiedDataType:100"))
+
+    assert_equal %w[SpecifiedTradeSettlementHeaderMonetarySummation InvoiceReferencedDocument],
+                 child_names(settlement).last(2)
+    assert_equal "RE-0", text(ref, "ram:IssuerAssignedID")
+    assert_equal "20240501", date.text
+    assert_equal "102", date["format"]
+  end
+
+  def test_writes_only_first_preceding_invoice
+    invoice = minimal_invoice
+    invoice.preceding_invoices << PrecedingInvoice.new(number: "RE-0")
+    invoice.preceding_invoices << PrecedingInvoice.new(number: "RE-00")
+    refs = write(invoice).xpath("#{SETTLEMENT}/ram:InvoiceReferencedDocument/ram:IssuerAssignedID", CII_NS)
+
+    assert_equal %w[RE-0], refs.map(&:text)
+  end
+
+  def test_omits_preceding_invoice_without_references
+    assert_nil write(minimal_invoice).at_xpath("#{SETTLEMENT}/ram:InvoiceReferencedDocument", CII_NS)
+  end
+
+  def test_preceding_invoice_survives_roundtrip
+    invoice = full_invoice
+    invoice.preceding_invoices << PrecedingInvoice.new(number: "RE-0", issue_date: Date.new(2024, 5, 1))
+    read = Zugpferd::CII::Reader.new.read(Zugpferd::CII::Writer.new.write(invoice)).preceding_invoices
+
+    assert_equal ["RE-0"], read.map(&:number)
+    assert_equal [Date.new(2024, 5, 1)], read.map(&:issue_date)
+  end
+
   def test_writes_settlement_elements_in_order
     settlement = write(full_invoice).at_xpath(SETTLEMENT, CII_NS)
 

@@ -62,6 +62,7 @@ module Zugpferd
           buyer: build_party(root.at_xpath(BUYER, NS)),
           line_items: root.xpath(INVOICE_LINE, NS).map { |n| build_line_item(n) },
           allowance_charges: settlement ? build_allowance_charges(settlement) : [],
+          preceding_invoices: settlement ? build_preceding_invoices(settlement) : [],
           tax_breakdown: build_tax_breakdown(settlement),
           monetary_totals: build_monetary_totals(settlement&.at_xpath(MONETARY_TOTAL, NS)),
           payment_instructions: build_payment_instructions(settlement),
@@ -219,6 +220,15 @@ module Zugpferd
         Model::Price.new(
           amount: text(node, PRICE_FIELDS[:amount]),
         )
+      end
+
+      def build_preceding_invoices(settlement_node)
+        settlement_node.xpath(PRECEDING_INVOICE, NS).map do |node|
+          Model::PrecedingInvoice.new(
+            number: text(node, PRECEDING_INVOICE_FIELDS[:number]),
+            issue_date: parse_cii_date(text(node, PRECEDING_INVOICE_FIELDS[:issue_date])),
+          )
+        end
       end
 
       def build_allowance_charges(settlement_node)

@@ -38,6 +38,13 @@ module Zugpferd
         end_date:   "ram:EndDateTime/udt:DateTimeString",
       }.freeze
 
+      # Preceding invoice reference (BG-3), relative to the settlement node
+      PRECEDING_INVOICE = "ram:InvoiceReferencedDocument"
+      PRECEDING_INVOICE_FIELDS = {
+        number:     "ram:IssuerAssignedID",
+        issue_date: "ram:FormattedIssueDateTime/qdt:DateTimeString",
+      }.freeze
+
       INVOICE_SETTLEMENT = {
         currency_code:  "#{SETTLEMENT}/ram:InvoiceCurrencyCode",
         buyer_reference: "#{AGREEMENT}/ram:BuyerReference",
