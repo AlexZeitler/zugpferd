@@ -139,6 +139,13 @@ module Zugpferd
         line_extension_amount: "ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeSettlementLineMonetarySummation/ram:LineTotalAmount",
       }.freeze
 
+      # Invoice line period (BG-26)
+      LINE_PERIOD = "ram:SpecifiedLineTradeSettlement/ram:BillingSpecifiedPeriod"
+      LINE_PERIOD_FIELDS = {
+        start_date: "ram:StartDateTime/udt:DateTimeString",
+        end_date:   "ram:EndDateTime/udt:DateTimeString",
+      }.freeze
+
       # Item (BG-31)
       ITEM = "ram:SpecifiedTradeProduct"
       ITEM_FIELDS = {

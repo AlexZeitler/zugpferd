@@ -370,6 +370,33 @@ class CIIWriterTest < Minitest::Test
     assert_equal %w[VAT S 19], tax.element_children.map(&:text)
   end
 
+  def test_writes_line_item_period
+    invoice = full_invoice
+    invoice.line_items.first.period_start_date = Date.new(2024, 6, 1)
+    invoice.line_items.first.period_end_date = Date.new(2024, 6, 30)
+    settlement = write(invoice).at_xpath("#{LINE}/ram:SpecifiedLineTradeSettlement", CII_NS)
+    period = settlement.at_xpath("ram:BillingSpecifiedPeriod", CII_NS)
+
+    assert_equal %w[ApplicableTradeTax BillingSpecifiedPeriod SpecifiedTradeSettlementLineMonetarySummation],
+                 child_names(settlement)
+    assert_equal %w[20240601 20240630], period.xpath(".//udt:DateTimeString", CII_NS).map(&:text)
+    assert_equal %w[102 102], period.xpath(".//udt:DateTimeString", CII_NS).map { |n| n["format"] }
+  end
+
+  def test_omits_line_item_period_without_dates
+    assert_nil write(full_invoice).at_xpath("#{LINE}/ram:SpecifiedLineTradeSettlement/ram:BillingSpecifiedPeriod", CII_NS)
+  end
+
+  def test_line_item_period_survives_roundtrip
+    invoice = full_invoice
+    invoice.line_items.first.period_start_date = Date.new(2024, 6, 1)
+    invoice.line_items.first.period_end_date = Date.new(2024, 6, 30)
+    line = Zugpferd::CII::Reader.new.read(Zugpferd::CII::Writer.new.write(invoice)).line_items.first
+
+    assert_equal Date.new(2024, 6, 1), line.period_start_date
+    assert_equal Date.new(2024, 6, 30), line.period_end_date
+  end
+
   def test_writes_minimal_line_item
     invoice = minimal_invoice
     invoice.line_items << LineItem.new(id: "1", invoiced_quantity: "1", unit_code: "C62", line_extension_amount: "10")

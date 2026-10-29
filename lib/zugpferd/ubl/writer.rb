@@ -274,8 +274,16 @@ module Zugpferd
                           unitCode: line.unit_code)
           xml["cbc"].LineExtensionAmount(format_decimal(line.line_extension_amount),
                                          currencyID: currency_code)
+          build_line_period(xml, line) if line.period_start_date || line.period_end_date
           build_item(xml, line.item) if line.item
           build_price(xml, line.price, currency_code) if line.price
+        end
+      end
+
+      def build_line_period(xml, line)
+        xml["cac"].InvoicePeriod do
+          xml["cbc"].StartDate line.period_start_date.to_s if line.period_start_date
+          xml["cbc"].EndDate line.period_end_date.to_s if line.period_end_date
         end
       end
 

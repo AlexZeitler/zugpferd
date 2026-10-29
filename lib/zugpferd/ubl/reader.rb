@@ -168,6 +168,7 @@ module Zugpferd
       def build_line_item(node)
         item_node = node.at_xpath(ITEM, @ns)
         price_node = node.at_xpath(PRICE, @ns)
+        period_node = node.at_xpath(LINE_PERIOD, @ns)
 
         quantity_element = @credit_note ? "cbc:CreditedQuantity" : LINE[:invoiced_quantity]
         unit_code_element = @credit_note ? "cbc:CreditedQuantity/@unitCode" : LINE[:unit_code]
@@ -178,6 +179,8 @@ module Zugpferd
           unit_code: node.at_xpath(unit_code_element, @ns)&.text,
           line_extension_amount: text(node, LINE[:line_extension_amount]),
           note: text(node, LINE[:note]),
+          period_start_date: period_node ? parse_date(text(period_node, LINE_PERIOD_FIELDS[:start_date])) : nil,
+          period_end_date: period_node ? parse_date(text(period_node, LINE_PERIOD_FIELDS[:end_date])) : nil,
           item: build_item(item_node),
           price: build_price(price_node),
         )

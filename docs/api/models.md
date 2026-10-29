@@ -131,6 +131,8 @@ line = Zugpferd::Model::LineItem.new(
 | `unit_code` | BT-130 | `String` | Unit code (required) |
 | `line_extension_amount` | BT-131 | `String` | Line total (required) |
 | `note` | BT-127 | `String` | Line note |
+| `period_start_date` | BT-134 | `Date` | Invoice line period start date |
+| `period_end_date` | BT-135 | `Date` | Invoice line period end date |
 | `item` | BG-31 | `Item` | Item information |
 | `price` | BG-29 | `Price` | Price details |
 

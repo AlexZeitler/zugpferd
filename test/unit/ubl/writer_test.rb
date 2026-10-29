@@ -41,7 +41,55 @@ class UBLWriterTest < Minitest::Test
     assert_equal Date.new(2024, 6, 30), read.invoicing_period_end_date
   end
 
+  def test_writes_line_item_period_before_item
+    doc = write(build_document(Invoice, line_with_period))
+    line = doc.at_xpath("/ubl:Invoice/cac:InvoiceLine", UBL_NS)
+
+    assert_equal "2024-06-01", xpath_text(line, "cac:InvoicePeriod/cbc:StartDate")
+    assert_equal "2024-06-30", xpath_text(line, "cac:InvoicePeriod/cbc:EndDate")
+    assert_equal %w[ID InvoicedQuantity LineExtensionAmount InvoicePeriod Item],
+                 line.element_children.map(&:name)
+  end
+
+  def test_writes_line_item_period_in_credit_note
+    line = line_with_period
+    line.period_end_date = nil
+    doc = write(build_document(CreditNote, line))
+
+    assert_equal "2024-06-01", xpath_text(doc, "/*/cac:CreditNoteLine/cac:InvoicePeriod/cbc:StartDate")
+    assert_nil doc.at_xpath("/*/cac:CreditNoteLine/cac:InvoicePeriod/cbc:EndDate", UBL_NS)
+  end
+
+  def test_omits_line_item_period_without_dates
+    line = line_with_period
+    line.period_start_date = line.period_end_date = nil
+
+    assert_nil write(build_document(Invoice, line)).at_xpath("//cac:InvoicePeriod", UBL_NS)
+  end
+
+  def test_line_item_period_survives_roundtrip
+    xml = Zugpferd::UBL::Writer.new.write(build_document(Invoice, line_with_period))
+    read = Zugpferd::UBL::Reader.new.read(xml).line_items.first
+
+    assert_equal Date.new(2024, 6, 1), read.period_start_date
+    assert_equal Date.new(2024, 6, 30), read.period_end_date
+  end
+
   private
+
+  def line_with_period
+    LineItem.new(
+      id: "1", invoiced_quantity: "1", unit_code: "C62", line_extension_amount: "10",
+      period_start_date: Date.new(2024, 6, 1), period_end_date: Date.new(2024, 6, 30),
+      item: Item.new(name: "Widget")
+    )
+  end
+
+  def build_document(klass, line)
+    document = klass.new(number: "RE-1", issue_date: Date.new(2024, 6, 15))
+    document.line_items << line
+    document
+  end
 
   def invoice_with_period
     invoice = Invoice.new(number: "RE-1", issue_date: Date.new(2024, 6, 15))
