@@ -50,6 +50,7 @@ module Zugpferd
         xml["cbc"].Note doc.note if doc.note
         xml["cbc"].DocumentCurrencyCode doc.currency_code
         xml["cbc"].BuyerReference doc.buyer_reference if doc.buyer_reference
+        build_invoice_period(xml, doc) if doc.invoicing_period_start_date || doc.invoicing_period_end_date
 
         build_supplier(xml, doc.seller, doc.payment_instructions) if doc.seller
         build_customer(xml, doc.buyer) if doc.buyer
@@ -138,6 +139,13 @@ module Zugpferd
           xml["cbc"].Name contact.name if contact.name
           xml["cbc"].Telephone contact.telephone if contact.telephone
           xml["cbc"].ElectronicMail contact.email if contact.email
+        end
+      end
+
+      def build_invoice_period(xml, doc)
+        xml["cac"].InvoicePeriod do
+          xml["cbc"].StartDate doc.invoicing_period_start_date.to_s if doc.invoicing_period_start_date
+          xml["cbc"].EndDate doc.invoicing_period_end_date.to_s if doc.invoicing_period_end_date
         end
       end
 

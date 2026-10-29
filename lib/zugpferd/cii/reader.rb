@@ -36,6 +36,7 @@ module Zugpferd
       def build_invoice(root)
         settlement = root.at_xpath(SETTLEMENT, NS)
         delivery = root.at_xpath(DELIVERY, NS)
+        period = settlement&.at_xpath(BILLING_PERIOD, NS)
         type_code = text(root, INVOICE[:type_code])
         model_class = TYPE_CODE_MAP.fetch(type_code, Model::Invoice)
 
@@ -44,6 +45,8 @@ module Zugpferd
           issue_date: parse_cii_date(text(root, INVOICE[:issue_date])),
           due_date: parse_cii_date(settlement ? text(settlement, PAYMENT_TERMS_DUE_DATE) : nil),
           delivery_date: parse_cii_date(delivery ? text(delivery, DELIVERY_DATE) : nil),
+          invoicing_period_start_date: parse_cii_date(period ? text(period, BILLING_PERIOD_FIELDS[:start_date]) : nil),
+          invoicing_period_end_date: parse_cii_date(period ? text(period, BILLING_PERIOD_FIELDS[:end_date]) : nil),
           type_code: text(root, INVOICE[:type_code]),
           currency_code: text(root, INVOICE_SETTLEMENT[:currency_code]),
           buyer_reference: text(root, INVOICE_SETTLEMENT[:buyer_reference]),

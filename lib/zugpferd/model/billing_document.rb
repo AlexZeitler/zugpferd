@@ -19,6 +19,8 @@ module Zugpferd
       # @return [String] BT-3 Invoice type code
       # @return [String] BT-5 Document currency code (default: "EUR")
       # @return [Date, nil] BT-72 Actual delivery date
+      # @return [Date, nil] BT-73 Invoicing period start date
+      # @return [Date, nil] BT-74 Invoicing period end date
       # @return [String, nil] BT-10 Buyer reference
       # @return [String, nil] BT-24 Specification identifier
       # @return [String, nil] BT-23 Business process type
@@ -31,8 +33,9 @@ module Zugpferd
       # @return [PaymentInstructions, nil] BG-16 Payment information
       # @return [Array<AllowanceCharge>] BG-20/BG-21 Document-level allowances and charges
       attr_accessor :number, :issue_date, :due_date, :type_code,
-                    :currency_code, :delivery_date, :buyer_reference,
-                    :customization_id, :profile_id, :note, :seller, :buyer,
+                    :currency_code, :delivery_date,
+                    :invoicing_period_start_date, :invoicing_period_end_date,
+                    :buyer_reference, :customization_id, :profile_id, :note, :seller, :buyer,
                     :line_items, :tax_breakdown, :monetary_totals,
                     :payment_instructions, :allowance_charges
 

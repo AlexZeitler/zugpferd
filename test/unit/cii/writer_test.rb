@@ -148,6 +148,43 @@ class CIIWriterTest < Minitest::Test
     assert_empty delivery.element_children
   end
 
+  def test_writes_invoicing_period
+    invoice = minimal_invoice
+    invoice.invoicing_period_start_date = Date.new(2024, 6, 1)
+    invoice.invoicing_period_end_date = Date.new(2024, 6, 30)
+    period = "#{SETTLEMENT}/ram:BillingSpecifiedPeriod"
+    doc = write(invoice)
+
+    start_date = doc.at_xpath("#{period}/ram:StartDateTime/udt:DateTimeString", CII_NS)
+    end_date = doc.at_xpath("#{period}/ram:EndDateTime/udt:DateTimeString", CII_NS)
+    assert_equal "20240601", start_date.text
+    assert_equal "102", start_date["format"]
+    assert_equal "20240630", end_date.text
+    assert_equal "102", end_date["format"]
+  end
+
+  def test_writes_invoicing_period_with_only_start_date
+    invoice = minimal_invoice
+    invoice.invoicing_period_start_date = Date.new(2024, 6, 1)
+    period = write(invoice).at_xpath("#{SETTLEMENT}/ram:BillingSpecifiedPeriod", CII_NS)
+
+    assert_equal %w[StartDateTime], period.element_children.map(&:name)
+  end
+
+  def test_omits_invoicing_period_without_dates
+    assert_nil write(minimal_invoice).at_xpath("#{SETTLEMENT}/ram:BillingSpecifiedPeriod", CII_NS)
+  end
+
+  def test_invoicing_period_survives_roundtrip
+    invoice = full_invoice
+    invoice.invoicing_period_start_date = Date.new(2024, 6, 1)
+    invoice.invoicing_period_end_date = Date.new(2024, 6, 30)
+    read = Zugpferd::CII::Reader.new.read(Zugpferd::CII::Writer.new.write(invoice))
+
+    assert_equal Date.new(2024, 6, 1), read.invoicing_period_start_date
+    assert_equal Date.new(2024, 6, 30), read.invoicing_period_end_date
+  end
+
   def test_writes_settlement_elements_in_order
     settlement = write(full_invoice).at_xpath(SETTLEMENT, CII_NS)
 

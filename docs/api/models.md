@@ -38,6 +38,8 @@ invoice = Zugpferd::Model::Invoice.new(
 | `due_date` | BT-9 | `Date` | Payment due date |
 | `type_code` | BT-3 | `String` | Invoice type code (see [supported types](#supported-type-codes)) |
 | `currency_code` | BT-5 | `String` | Document currency |
+| `invoicing_period_start_date` | BT-73 | `Date` | Invoicing period start date |
+| `invoicing_period_end_date` | BT-74 | `Date` | Invoicing period end date |
 | `buyer_reference` | BT-10 | `String` | Buyer reference |
 | `customization_id` | BT-24 | `String` | Specification identifier |
 | `profile_id` | BT-23 | `String` | Business process type |

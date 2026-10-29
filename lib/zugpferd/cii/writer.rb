@@ -173,6 +173,8 @@ module Zugpferd
             end
           end
 
+          build_billing_period(xml, doc) if doc.invoicing_period_start_date || doc.invoicing_period_end_date
+
           doc.allowance_charges.each { |ac| build_allowance_charge(xml, ac) }
 
           if doc.payment_instructions&.note || doc.due_date || doc.payment_instructions&.mandate_reference
@@ -188,6 +190,21 @@ module Zugpferd
           end
 
           build_monetary_total(xml, doc.monetary_totals, doc.tax_breakdown) if doc.monetary_totals
+        end
+      end
+
+      def build_billing_period(xml, doc)
+        xml["ram"].BillingSpecifiedPeriod do
+          if doc.invoicing_period_start_date
+            xml["ram"].StartDateTime do
+              xml["udt"].DateTimeString(format_cii_date(doc.invoicing_period_start_date), format: "102")
+            end
+          end
+          if doc.invoicing_period_end_date
+            xml["ram"].EndDateTime do
+              xml["udt"].DateTimeString(format_cii_date(doc.invoicing_period_end_date), format: "102")
+            end
+          end
         end
       end
 

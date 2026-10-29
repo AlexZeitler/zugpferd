@@ -30,6 +30,13 @@ module Zugpferd
       DELIVERY = "cac:Delivery"
       DELIVERY_DATE = "cbc:ActualDeliveryDate"
 
+      # Invoicing period (BG-14)
+      INVOICE_PERIOD = "cac:InvoicePeriod"
+      INVOICE_PERIOD_FIELDS = {
+        start_date: "cbc:StartDate",
+        end_date:   "cbc:EndDate",
+      }.freeze
+
       # Seller (BG-4)
       SELLER = "cac:AccountingSupplierParty/cac:Party"
       # Buyer (BG-7)

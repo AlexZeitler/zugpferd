@@ -31,6 +31,13 @@ module Zugpferd
       SETTLEMENT = "#{TRANSACTION}/ram:ApplicableHeaderTradeSettlement"
       AGREEMENT = "#{TRANSACTION}/ram:ApplicableHeaderTradeAgreement"
 
+      # Invoicing period (BG-14)
+      BILLING_PERIOD = "ram:BillingSpecifiedPeriod"
+      BILLING_PERIOD_FIELDS = {
+        start_date: "ram:StartDateTime/udt:DateTimeString",
+        end_date:   "ram:EndDateTime/udt:DateTimeString",
+      }.freeze
+
       INVOICE_SETTLEMENT = {
         currency_code:  "#{SETTLEMENT}/ram:InvoiceCurrencyCode",
         buyer_reference: "#{AGREEMENT}/ram:BuyerReference",
