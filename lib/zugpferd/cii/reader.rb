@@ -170,6 +170,7 @@ module Zugpferd
         item_node = node.at_xpath(ITEM, NS)
         price_node = node.at_xpath(PRICE, NS)
         tax_node = node.at_xpath(ITEM_TAX, NS)
+        period_node = node.at_xpath(LINE_PERIOD, NS)
 
         Model::LineItem.new(
           id: text(node, LINE[:id]),
@@ -177,6 +178,8 @@ module Zugpferd
           unit_code: node.at_xpath(LINE[:unit_code], NS)&.text,
           line_extension_amount: text(node, LINE[:line_extension_amount]),
           note: text(node, LINE[:note]),
+          period_start_date: parse_cii_date(period_node ? text(period_node, LINE_PERIOD_FIELDS[:start_date]) : nil),
+          period_end_date: parse_cii_date(period_node ? text(period_node, LINE_PERIOD_FIELDS[:end_date]) : nil),
           item: build_item(item_node, tax_node),
           price: build_price(price_node),
         )

@@ -314,8 +314,25 @@ module Zugpferd
               end
             end
 
+            build_line_period(xml, line) if line.period_start_date || line.period_end_date
+
             xml["ram"].SpecifiedTradeSettlementLineMonetarySummation do
               xml["ram"].LineTotalAmount format_decimal(line.line_extension_amount)
+            end
+          end
+        end
+      end
+
+      def build_line_period(xml, line)
+        xml["ram"].BillingSpecifiedPeriod do
+          if line.period_start_date
+            xml["ram"].StartDateTime do
+              xml["udt"].DateTimeString(format_cii_date(line.period_start_date), format: "102")
+            end
+          end
+          if line.period_end_date
+            xml["ram"].EndDateTime do
+              xml["udt"].DateTimeString(format_cii_date(line.period_end_date), format: "102")
             end
           end
         end

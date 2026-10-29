@@ -132,6 +132,13 @@ module Zugpferd
         note:                  "cbc:Note",
       }.freeze
 
+      # Invoice line period (BG-26)
+      LINE_PERIOD = "cac:InvoicePeriod"
+      LINE_PERIOD_FIELDS = {
+        start_date: "cbc:StartDate",
+        end_date:   "cbc:EndDate",
+      }.freeze
+
       # Item (BG-31)
       ITEM = "cac:Item"
       ITEM_FIELDS = {

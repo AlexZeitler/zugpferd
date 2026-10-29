@@ -9,10 +9,13 @@ module Zugpferd
       # @return [String] BT-130 Unit of measure code
       # @return [BigDecimal] BT-131 Line extension amount
       # @return [String, nil] BT-127 Invoice line note
+      # @return [Date, nil] BT-134 Invoice line period start date
+      # @return [Date, nil] BT-135 Invoice line period end date
       # @return [Item, nil] BG-31 Item information
       # @return [Price, nil] BG-29 Price details
       attr_accessor :id, :invoiced_quantity, :unit_code,
-                    :line_extension_amount, :note, :item, :price
+                    :line_extension_amount, :note, :period_start_date,
+                    :period_end_date, :item, :price
 
       # @param id [String] BT-126 Line identifier
       # @param invoiced_quantity [String, BigDecimal] BT-129 Quantity
