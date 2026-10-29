@@ -26,6 +26,9 @@ module Zugpferd
         note:               "cbc:Note",
       }.freeze
 
+      # BT-9 in a credit note (it has no cbc:DueDate)
+      CREDIT_NOTE_DUE_DATE = "cac:PaymentMeans/cbc:PaymentDueDate"
+
       # Delivery (BG-13)
       DELIVERY = "cac:Delivery"
       DELIVERY_DATE = "cbc:ActualDeliveryDate"

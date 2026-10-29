@@ -41,7 +41,7 @@ module Zugpferd
         xml["cbc"].ProfileID doc.profile_id if doc.profile_id
         xml["cbc"].ID doc.number
         xml["cbc"].IssueDate doc.issue_date.to_s
-        xml["cbc"].DueDate doc.due_date.to_s if doc.due_date
+        xml["cbc"].DueDate doc.due_date.to_s if doc.due_date && !@credit_note
         if @credit_note
           xml["cbc"].CreditNoteTypeCode doc.type_code
         else
@@ -56,7 +56,7 @@ module Zugpferd
         build_supplier(xml, doc.seller, doc.payment_instructions) if doc.seller
         build_customer(xml, doc.buyer) if doc.buyer
         build_delivery(xml, doc) if doc.delivery_date
-        build_payment_means(xml, doc.payment_instructions) if doc.payment_instructions
+        build_payment_means(xml, doc.payment_instructions, doc.due_date) if doc.payment_instructions
         build_payment_terms(xml, doc.payment_instructions) if doc.payment_instructions&.note
         doc.allowance_charges.each { |ac| build_allowance_charge(xml, ac, doc.currency_code) }
         build_tax_total(xml, doc.tax_breakdown) if doc.tax_breakdown
@@ -162,9 +162,11 @@ module Zugpferd
         end
       end
 
-      def build_payment_means(xml, payment)
+      # A credit note has no cbc:DueDate, BT-9 is written as PaymentDueDate instead.
+      def build_payment_means(xml, payment, due_date = nil)
         xml["cac"].PaymentMeans do
           xml["cbc"].PaymentMeansCode payment.payment_means_code
+          xml["cbc"].PaymentDueDate due_date.to_s if @credit_note && due_date
           xml["cbc"].PaymentID payment.payment_id if payment.payment_id
           if payment.card_account_id
             xml["cac"].CardAccount do

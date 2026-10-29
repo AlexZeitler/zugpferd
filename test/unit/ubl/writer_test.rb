@@ -41,6 +41,34 @@ class UBLWriterTest < Minitest::Test
     assert_equal Date.new(2024, 6, 30), read.invoicing_period_end_date
   end
 
+  def test_writes_due_date_of_invoice_as_due_date
+    doc = write(invoice_with_due_date)
+
+    assert_equal "2024-06-29", xpath_text(doc, "/ubl:Invoice/cbc:DueDate")
+    assert_nil doc.at_xpath("//cac:PaymentMeans/cbc:PaymentDueDate", UBL_NS)
+  end
+
+  def test_writes_due_date_of_credit_note_as_payment_due_date
+    doc = write(credit_note_with_due_date)
+
+    assert_nil doc.at_xpath("/*/cbc:DueDate", UBL_NS)
+    assert_equal %w[PaymentMeansCode PaymentDueDate],
+                 doc.at_xpath("/*/cac:PaymentMeans", UBL_NS).element_children.map(&:name)
+    assert_equal "2024-06-29", xpath_text(doc, "/*/cac:PaymentMeans/cbc:PaymentDueDate")
+  end
+
+  def test_credit_note_due_date_survives_roundtrip
+    read = Zugpferd::UBL::Reader.new.read(Zugpferd::UBL::Writer.new.write(credit_note_with_due_date))
+
+    assert_equal Date.new(2024, 6, 29), read.due_date
+  end
+
+  def test_invoice_due_date_survives_roundtrip
+    read = Zugpferd::UBL::Reader.new.read(Zugpferd::UBL::Writer.new.write(invoice_with_due_date))
+
+    assert_equal Date.new(2024, 6, 29), read.due_date
+  end
+
   def test_writes_purchase_order_reference
     doc = write(invoice_with_order_reference)
 
@@ -140,5 +168,17 @@ class UBLWriterTest < Minitest::Test
 
   def write(document)
     parse_xml(Zugpferd::UBL::Writer.new.write(document))
+  end
+
+  def invoice_with_due_date
+    invoice = Invoice.new(number: "RE-1", issue_date: Date.new(2024, 6, 15), due_date: Date.new(2024, 6, 29))
+    invoice.payment_instructions = PaymentInstructions.new(payment_means_code: "58")
+    invoice
+  end
+
+  def credit_note_with_due_date
+    credit_note = CreditNote.new(number: "GS-1", issue_date: Date.new(2024, 6, 15), due_date: Date.new(2024, 6, 29))
+    credit_note.payment_instructions = PaymentInstructions.new(payment_means_code: "58")
+    credit_note
   end
 end
