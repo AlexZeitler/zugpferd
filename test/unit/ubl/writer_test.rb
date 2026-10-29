@@ -136,6 +136,35 @@ class UBLWriterTest < Minitest::Test
     assert_equal Date.new(2024, 6, 30), read.period_end_date
   end
 
+  def test_writes_preceding_invoices_after_invoice_period
+    invoice = invoice_with_period
+    invoice.preceding_invoices << PrecedingInvoice.new(number: "RE-0", issue_date: Date.new(2024, 5, 1))
+    invoice.preceding_invoices << PrecedingInvoice.new(number: "RE-00")
+    doc = write(invoice)
+    refs = doc.xpath("/ubl:Invoice/cac:BillingReference/cac:InvoiceDocumentReference", UBL_NS)
+
+    assert_equal %w[RE-0 RE-00], refs.map { |r| xpath_text(r, "cbc:ID") }
+    assert_equal "2024-05-01", xpath_text(refs.first, "cbc:IssueDate")
+    assert_nil refs.last.at_xpath("cbc:IssueDate", UBL_NS)
+    names = doc.root.element_children.map(&:name)
+    assert_equal %w[InvoicePeriod BillingReference BillingReference],
+                 names[names.index("InvoicePeriod"), 3]
+  end
+
+  def test_omits_billing_reference_without_preceding_invoices
+    assert_nil write(invoice_with_period).at_xpath("//cac:BillingReference", UBL_NS)
+  end
+
+  def test_preceding_invoices_survive_roundtrip
+    invoice = invoice_with_period
+    invoice.preceding_invoices << PrecedingInvoice.new(number: "RE-0", issue_date: Date.new(2024, 5, 1))
+    invoice.preceding_invoices << PrecedingInvoice.new(number: "RE-00")
+    read = Zugpferd::UBL::Reader.new.read(Zugpferd::UBL::Writer.new.write(invoice)).preceding_invoices
+
+    assert_equal %w[RE-0 RE-00], read.map(&:number)
+    assert_equal [Date.new(2024, 5, 1), nil], read.map(&:issue_date)
+  end
+
   private
 
   def line_with_period

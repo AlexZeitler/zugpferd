@@ -197,6 +197,20 @@ module Zugpferd
           end
 
           build_monetary_total(xml, doc.monetary_totals, doc.tax_breakdown) if doc.monetary_totals
+
+          # CII allows a single InvoiceReferencedDocument, so only the first BG-3 is written
+          build_preceding_invoice(xml, doc.preceding_invoices.first) if doc.preceding_invoices.any?
+        end
+      end
+
+      def build_preceding_invoice(xml, preceding)
+        xml["ram"].InvoiceReferencedDocument do
+          xml["ram"].IssuerAssignedID preceding.number
+          if preceding.issue_date
+            xml["ram"].FormattedIssueDateTime do
+              xml["qdt"].DateTimeString(format_cii_date(preceding.issue_date), format: "102")
+            end
+          end
         end
       end
 

@@ -166,6 +166,7 @@ The model maps to the Business Groups of EN 16931:
 | `Model::TaxBreakdown` | BG-23 | VAT breakdown |
 | `Model::PaymentInstructions` | BG-16 | Payment information |
 | `Model::AllowanceCharge` | BG-20 / BG-21 | Allowances and charges |
+| `Model::PrecedingInvoice` | BG-3 | Preceding invoice reference |
 
 ## Requirements
 

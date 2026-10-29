@@ -19,6 +19,7 @@ module Zugpferd
       # @return [String] BT-3 Invoice type code
       # @return [String] BT-5 Document currency code (default: "EUR")
       # @return [Date, nil] BT-72 Actual delivery date
+      # @return [Array<PrecedingInvoice>] BG-3 Preceding invoice references
       # @return [Date, nil] BT-73 Invoicing period start date
       # @return [Date, nil] BT-74 Invoicing period end date
       # @return [String, nil] BT-10 Buyer reference
@@ -39,7 +40,7 @@ module Zugpferd
                     :buyer_reference, :purchase_order_reference,
                     :customization_id, :profile_id, :note, :seller, :buyer,
                     :line_items, :tax_breakdown, :monetary_totals,
-                    :payment_instructions, :allowance_charges
+                    :payment_instructions, :allowance_charges, :preceding_invoices
 
       # @param number [String] BT-1 Invoice number
       # @param issue_date [Date] BT-2 Issue date
@@ -54,6 +55,7 @@ module Zugpferd
         @currency_code = currency_code
         @line_items = []
         @allowance_charges = []
+        @preceding_invoices = []
         @tax_breakdown = nil
         rest.each { |k, v| public_send(:"#{k}=", v) }
       end

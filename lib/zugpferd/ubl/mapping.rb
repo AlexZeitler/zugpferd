@@ -43,6 +43,13 @@ module Zugpferd
       # Purchase order reference (BT-13)
       ORDER_REFERENCE = "cac:OrderReference/cbc:ID"
 
+      # Preceding invoice reference (BG-3)
+      PRECEDING_INVOICE = "cac:BillingReference/cac:InvoiceDocumentReference"
+      PRECEDING_INVOICE_FIELDS = {
+        number:     "cbc:ID",
+        issue_date: "cbc:IssueDate",
+      }.freeze
+
       # Seller (BG-4)
       SELLER = "cac:AccountingSupplierParty/cac:Party"
       # Buyer (BG-7)
