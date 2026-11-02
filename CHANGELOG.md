@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Relax the `bigdecimal` dependency from `~> 3.1` to `>= 3.1` to allow version 4 and later
+
 ## [0.4.0] - 2026-11-02
 
 ### Added

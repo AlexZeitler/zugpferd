@@ -171,7 +171,7 @@ The model maps to the Business Groups of EN 16931:
 
 - Ruby >= 3.2
 - nokogiri ~> 1.16
-- bigdecimal ~> 3.1
+- bigdecimal >= 3.1
 
 ## Development
 
