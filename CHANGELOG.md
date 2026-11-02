@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-02
+
+### Added
+
+- Invoice line period (BG-26) with start date (BT-134) and end date (BT-135) in data model, UBL and CII readers/writers
+
 ### Changed
 
 - Relax the `bigdecimal` dependency from `~> 3.1` to `>= 3.1` to allow version 4 and later
