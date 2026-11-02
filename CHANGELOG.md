@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-02
+
+### Added
+
+- Invoicing period (BG-14) with start date (BT-73) and end date (BT-74) in data model, UBL and CII readers/writers
+
 ## [0.3.5] - 2026-10-20
 
 ### Fixed
