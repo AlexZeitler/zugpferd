@@ -195,6 +195,18 @@ class CIIWriterTest < Minitest::Test
     ], child_names(settlement)
   end
 
+  def test_writes_invoicing_period_between_tax_and_allowances
+    invoice = full_invoice
+    invoice.invoicing_period_start_date = Date.new(2024, 6, 1)
+    settlement = write(invoice).at_xpath(SETTLEMENT, CII_NS)
+
+    assert_equal %w[
+      CreditorReferenceID PaymentReference InvoiceCurrencyCode SpecifiedTradeSettlementPaymentMeans
+      ApplicableTradeTax BillingSpecifiedPeriod SpecifiedTradeAllowanceCharge SpecifiedTradeAllowanceCharge
+      SpecifiedTradePaymentTerms SpecifiedTradeSettlementHeaderMonetarySummation
+    ], child_names(settlement)
+  end
+
   def test_writes_settlement_references_and_currency
     doc = write(full_invoice)
 
