@@ -93,6 +93,7 @@ module Zugpferd
 
       # TaxTotal (BG-23)
       TAX_SUBTOTAL = "ram:ApplicableTradeTax"
+      TAX_FALLBACK_CURRENCY = "ram:InvoiceCurrencyCode"
       TAX = {
         taxable_amount:        "ram:BasisAmount",
         tax_amount:            "ram:CalculatedAmount",

@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- CII reader: read invoices without VAT that omit the invoice total VAT amount (BT-110) instead of raising an `ArgumentError`. The amount is set to `0`, so the writers output it
+
+### Changed
+
+- CII reader: raise `Zugpferd::CII::Reader::MissingTaxTotalError` when BT-110 is missing and the VAT breakdown (BG-23) is empty or does not sum to 0
+
 ## [0.5.0] - 2026-11-02
 
 ### Added

@@ -12,6 +12,9 @@ module Zugpferd
     class Reader
       include Mapping
 
+      # Raised when BT-110 is missing and the VAT breakdown (BG-23) does not sum to 0.
+      class MissingTaxTotalError < Zugpferd::Error; end
+
       TYPE_CODE_MAP = {
         "381" => Model::CreditNote,
         "384" => Model::CorrectedInvoice,
@@ -25,6 +28,7 @@ module Zugpferd
       # @param xml_string [String] valid CII D16B XML
       # @return [Model::BillingDocument]
       # @raise [Nokogiri::XML::SyntaxError] if the XML is malformed
+      # @raise [MissingTaxTotalError] if BT-110 is missing and the VAT breakdown does not sum to 0
       def read(xml_string)
         doc = Nokogiri::XML(xml_string) { |config| config.strict }
         root = doc.root
@@ -129,14 +133,9 @@ module Zugpferd
 
         totals_node = settlement_node.at_xpath(MONETARY_TOTAL, NS)
         tax_total_node = totals_node&.at_xpath(TOTALS[:tax_total_amount], NS)
-        currency = tax_total_node&.[]("currencyID")
+        currency = tax_total_node ? tax_total_node["currencyID"] : text(settlement_node, TAX_FALLBACK_CURRENCY)
 
-        breakdown = Model::TaxBreakdown.new(
-          tax_amount: tax_total_node&.text,
-          currency_code: currency,
-        )
-
-        breakdown.subtotals = settlement_node.xpath(TAX_SUBTOTAL, NS).map do |sub|
+        subtotals = settlement_node.xpath(TAX_SUBTOTAL, NS).map do |sub|
           Model::TaxSubtotal.new(
             taxable_amount: text(sub, TAX[:taxable_amount]),
             tax_amount: text(sub, TAX[:tax_amount]),
@@ -148,7 +147,23 @@ module Zugpferd
           )
         end
 
+        breakdown = Model::TaxBreakdown.new(
+          tax_amount: tax_total_node ? tax_total_node.text : zero_tax_total(subtotals),
+          currency_code: currency,
+        )
+        breakdown.subtotals = subtotals
         breakdown
+      end
+
+      # BR-CO-15 lets CII omit BT-110 on invoices without VAT. A breakdown
+      # that shows VAT contradicts that, even where the Schematron passes it.
+      def zero_tax_total(subtotals)
+        sum = subtotals.sum(BigDecimal("0"), &:tax_amount)
+        return sum if subtotals.any? && sum.zero?
+
+        raise MissingTaxTotalError,
+              "Invoice total VAT amount (BT-110) is missing and the VAT breakdown (BG-23) " \
+              "#{subtotals.empty? ? "is empty" : "sums to #{sum.to_s("F")}"}"
       end
 
       def build_monetary_totals(node)

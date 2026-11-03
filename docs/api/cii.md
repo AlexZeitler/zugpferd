@@ -22,7 +22,9 @@ Parses a CII D16B XML string and returns the appropriate model class based on th
 
 **Returns:** `Zugpferd::Model::Invoice`, `Zugpferd::Model::CreditNote`, or other `BillingDocument` subtype
 
-**Raises:** `Nokogiri::XML::SyntaxError` if the XML is malformed
+**Raises:**
+- `Nokogiri::XML::SyntaxError` if the XML is malformed
+- `Zugpferd::CII::Reader::MissingTaxTotalError` if the invoice total VAT amount (BT-110) is missing and the VAT breakdown (BG-23) is empty or does not sum to 0
 
 ## Writer
 
@@ -56,3 +58,4 @@ Serializes a billing document to a CII CrossIndustryInvoice XML string.
 - The mandate reference (BT-89) is inside `ram:SpecifiedTradePaymentTerms/ram:DirectDebitMandateID`
 - Tax information on line items is in `ram:SpecifiedLineTradeSettlement/ram:ApplicableTradeTax`, not in `ram:SpecifiedTradeProduct`
 - The charge indicator uses `udt:Indicator` with string values `"true"` / `"false"`
+- CII may omit the invoice total VAT amount (BT-110) on invoices without VAT. The reader then sets it to `0` and takes the currency from the document currency (BT-5), so the writers output `0` for it
