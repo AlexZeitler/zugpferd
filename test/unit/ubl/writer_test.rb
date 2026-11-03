@@ -41,6 +41,39 @@ class UBLWriterTest < Minitest::Test
     assert_equal Date.new(2024, 6, 30), read.invoicing_period_end_date
   end
 
+  def test_writes_purchase_order_reference
+    doc = write(invoice_with_order_reference)
+
+    assert_equal "PO-4711", xpath_text(doc, "/ubl:Invoice/cac:OrderReference/cbc:ID")
+  end
+
+  def test_writes_purchase_order_reference_after_invoicing_period
+    names = write(invoice_with_order_reference).root.element_children.map(&:name)
+
+    assert_equal names.index("InvoicePeriod") + 1, names.index("OrderReference")
+  end
+
+  def test_writes_purchase_order_reference_in_credit_note
+    credit_note = CreditNote.new(number: "GS-1", issue_date: Date.new(2024, 6, 15))
+    credit_note.purchase_order_reference = "PO-4711"
+
+    doc = parse_xml(Zugpferd::UBL::Writer.new.write(credit_note))
+
+    assert_equal "PO-4711", xpath_text(doc, "/*/cac:OrderReference/cbc:ID")
+  end
+
+  def test_omits_purchase_order_reference_when_not_set
+    invoice = Invoice.new(number: "RE-1", issue_date: Date.new(2024, 6, 15))
+
+    assert_nil write(invoice).at_xpath("//cac:OrderReference", UBL_NS)
+  end
+
+  def test_purchase_order_reference_survives_roundtrip
+    xml = Zugpferd::UBL::Writer.new.write(invoice_with_order_reference)
+
+    assert_equal "PO-4711", Zugpferd::UBL::Reader.new.read(xml).purchase_order_reference
+  end
+
   def test_writes_line_item_period_before_item
     doc = write(build_document(Invoice, line_with_period))
     line = doc.at_xpath("/ubl:Invoice/cac:InvoiceLine", UBL_NS)
@@ -96,6 +129,12 @@ class UBLWriterTest < Minitest::Test
     invoice.buyer_reference = "04011000-12345-34"
     invoice.invoicing_period_start_date = Date.new(2024, 6, 1)
     invoice.invoicing_period_end_date = Date.new(2024, 6, 30)
+    invoice
+  end
+
+  def invoice_with_order_reference
+    invoice = invoice_with_period
+    invoice.purchase_order_reference = "PO-4711"
     invoice
   end
 

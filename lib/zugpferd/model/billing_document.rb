@@ -22,6 +22,7 @@ module Zugpferd
       # @return [Date, nil] BT-73 Invoicing period start date
       # @return [Date, nil] BT-74 Invoicing period end date
       # @return [String, nil] BT-10 Buyer reference
+      # @return [String, nil] BT-13 Purchase order reference
       # @return [String, nil] BT-24 Specification identifier
       # @return [String, nil] BT-23 Business process type
       # @return [String, nil] BT-22 Invoice note
@@ -35,7 +36,8 @@ module Zugpferd
       attr_accessor :number, :issue_date, :due_date, :type_code,
                     :currency_code, :delivery_date,
                     :invoicing_period_start_date, :invoicing_period_end_date,
-                    :buyer_reference, :customization_id, :profile_id, :note, :seller, :buyer,
+                    :buyer_reference, :purchase_order_reference,
+                    :customization_id, :profile_id, :note, :seller, :buyer,
                     :line_items, :tax_breakdown, :monetary_totals,
                     :payment_instructions, :allowance_charges
 

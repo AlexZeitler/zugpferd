@@ -37,6 +37,9 @@ module Zugpferd
         end_date:   "cbc:EndDate",
       }.freeze
 
+      # Purchase order reference (BT-13)
+      ORDER_REFERENCE = "cac:OrderReference/cbc:ID"
+
       # Seller (BG-4)
       SELLER = "cac:AccountingSupplierParty/cac:Party"
       # Buyer (BG-7)
