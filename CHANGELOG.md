@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-11-03
+
 ### Fixed
 
 - CII reader: read invoices without VAT that omit the invoice total VAT amount (BT-110) instead of raising an `ArgumentError`. The amount is set to `0`, so the writers output it
