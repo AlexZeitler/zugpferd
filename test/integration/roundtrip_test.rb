@@ -72,6 +72,35 @@ class UBLCreditNoteRoundtripTest < Minitest::Test
   end
 end
 
+class CIIMissingTaxTotalRoundtripTest < Minitest::Test
+  include ValidatorHelper
+
+  EXAMPLES_PATH = File.expand_path("../../vendor/schemas/schematron/cen/cii/examples", __dir__)
+
+  %w[CII_example7 XRechnung-O].each do |name|
+    define_method("test_roundtrip_#{name.tr("-", "_")}") do
+      fixture = File.join(EXAMPLES_PATH, "#{name}.xml")
+      skip "CEN example not available" unless File.exist?(fixture)
+
+      invoice = Zugpferd::CII::Reader.new.read(File.read(fixture))
+
+      assert_equal BigDecimal("0"), invoice.tax_breakdown.tax_amount
+      assert_equal invoice.currency_code, invoice.tax_breakdown.currency_code
+
+      assert_no_fatals Zugpferd::CII::Writer.new.write(invoice), :cen_cii
+      assert_no_fatals Zugpferd::UBL::Writer.new.write(invoice), :cen_ubl
+    end
+  end
+
+  private
+
+  def assert_no_fatals(xml, rule_set)
+    fatals = schematron_validator.validate(xml, rule_set: rule_set).select { |e| e.flag == "fatal" }
+
+    assert_empty fatals, fatals.map { |e| "  [#{e.id}] #{e.text}" }.join("\n")
+  end
+end
+
 class CIIRoundtripTest < Minitest::Test
   include ValidatorHelper
 
