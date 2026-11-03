@@ -54,6 +54,7 @@ module Zugpferd
           type_code: text(root, INVOICE[:type_code]),
           currency_code: text(root, INVOICE_SETTLEMENT[:currency_code]),
           buyer_reference: text(root, INVOICE_SETTLEMENT[:buyer_reference]),
+          purchase_order_reference: text(root, INVOICE_SETTLEMENT[:purchase_order_reference]),
           customization_id: text(root, INVOICE[:customization_id]),
           profile_id: text(root, INVOICE[:profile_id]),
           note: text(root, INVOICE[:note]),

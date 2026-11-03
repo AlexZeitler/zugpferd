@@ -75,6 +75,37 @@ class CIIWriterTest < Minitest::Test
                  text(write(full_invoice), "//ram:ApplicableHeaderTradeAgreement/ram:BuyerReference")
   end
 
+  def test_writes_purchase_order_reference
+    invoice = full_invoice
+    invoice.purchase_order_reference = "PO-4711"
+
+    assert_equal "PO-4711", text(
+      write(invoice),
+      "//ram:ApplicableHeaderTradeAgreement/ram:BuyerOrderReferencedDocument/ram:IssuerAssignedID"
+    )
+  end
+
+  def test_writes_purchase_order_reference_after_buyer
+    invoice = full_invoice
+    invoice.purchase_order_reference = "PO-4711"
+    agreement = write(invoice).at_xpath("//ram:ApplicableHeaderTradeAgreement", CII_NS)
+
+    assert_equal %w[BuyerReference SellerTradeParty BuyerTradeParty BuyerOrderReferencedDocument],
+                 child_names(agreement)
+  end
+
+  def test_omits_purchase_order_reference_when_not_set
+    assert_nil write(full_invoice).at_xpath("//ram:BuyerOrderReferencedDocument", CII_NS)
+  end
+
+  def test_purchase_order_reference_survives_roundtrip
+    invoice = full_invoice
+    invoice.purchase_order_reference = "PO-4711"
+    read = Zugpferd::CII::Reader.new.read(Zugpferd::CII::Writer.new.write(invoice))
+
+    assert_equal "PO-4711", read.purchase_order_reference
+  end
+
   def test_writes_party_elements_in_order
     seller = write(full_invoice).at_xpath(SELLER, CII_NS)
 

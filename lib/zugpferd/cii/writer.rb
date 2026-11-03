@@ -76,6 +76,13 @@ module Zugpferd
           xml["ram"].BuyerReference doc.buyer_reference if doc.buyer_reference
           build_party(xml, "SellerTradeParty", doc.seller) if doc.seller
           build_party(xml, "BuyerTradeParty", doc.buyer) if doc.buyer
+          build_buyer_order_reference(xml, doc) if doc.purchase_order_reference
+        end
+      end
+
+      def build_buyer_order_reference(xml, doc)
+        xml["ram"].BuyerOrderReferencedDocument do
+          xml["ram"].IssuerAssignedID doc.purchase_order_reference
         end
       end
 
