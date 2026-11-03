@@ -149,7 +149,7 @@ class PdfVeraPdfValidationTest < Minitest::Test
   def setup
     skip "zugferd.ps not found (run bin/setup-schemas)" unless File.exist?(File.join(VENDOR_ZUGFERD, "zugferd.ps"))
     skip "Ghostscript not available" unless ghostscript_available?
-    @pdf_validator = Zugpferd::Validation::PdfValidator.new
+    @pdf_validator = Zugpferd::Validation::PdfValidator.new(port: 8081)
     skip "veraPDF not available (start with: docker compose up -d verapdf)" unless @pdf_validator.available?
   end
 
