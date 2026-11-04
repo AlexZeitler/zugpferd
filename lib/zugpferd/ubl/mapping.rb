@@ -53,6 +53,7 @@ module Zugpferd
         legal_registration_id:   "cac:PartyLegalEntity/cbc:CompanyID",
         legal_form:              "cac:PartyLegalEntity/cbc:CompanyLegalForm",
         vat_identifier:          "cac:PartyTaxScheme[cac:TaxScheme/cbc:ID='VAT']/cbc:CompanyID",
+        tax_registration_identifier: "cac:PartyTaxScheme[cac:TaxScheme/cbc:ID!='VAT']/cbc:CompanyID",
         electronic_address:      "cbc:EndpointID",
       }.freeze
 

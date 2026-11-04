@@ -114,6 +114,15 @@ module Zugpferd
             end
           end
 
+          if party.tax_registration_identifier
+            xml["cac"].PartyTaxScheme do
+              xml["cbc"].CompanyID party.tax_registration_identifier
+              xml["cac"].TaxScheme do
+                xml["cbc"].ID "FC"
+              end
+            end
+          end
+
           xml["cac"].PartyLegalEntity do
             xml["cbc"].RegistrationName party.name
             xml["cbc"].CompanyID party.legal_registration_id if party.legal_registration_id

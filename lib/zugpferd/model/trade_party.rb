@@ -12,12 +12,14 @@ module Zugpferd
       # @return [String, nil] BT-30/BT-47 Legal registration identifier
       # @return [String, nil] BT-33 Company legal form
       # @return [String, nil] BT-31/BT-48 VAT identifier
+      # @return [String, nil] BT-32 Seller tax registration identifier (seller only)
       # @return [String, nil] BT-34/BT-49 Electronic address
       # @return [String, nil] BT-34-1/BT-49-1 Electronic address scheme
       # @return [PostalAddress, nil] BG-5/BG-8 Postal address
       # @return [Contact, nil] BG-6/BG-9 Contact information
       attr_accessor :name, :trading_name, :identifier,
                     :legal_registration_id, :legal_form, :vat_identifier,
+                    :tax_registration_identifier,
                     :electronic_address, :electronic_address_scheme,
                     :postal_address, :contact
 

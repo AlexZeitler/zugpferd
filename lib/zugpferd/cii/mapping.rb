@@ -57,6 +57,7 @@ module Zugpferd
         legal_registration_id: "ram:SpecifiedLegalOrganization/ram:ID",
         legal_form:            "ram:Description",
         vat_identifier:        "ram:SpecifiedTaxRegistration/ram:ID[@schemeID='VA']",
+        tax_registration_identifier: "ram:SpecifiedTaxRegistration/ram:ID[@schemeID='FC']",
         electronic_address:    "ram:URIUniversalCommunication/ram:URIID",
       }.freeze
 

@@ -70,6 +70,7 @@ module Zugpferd
           legal_registration_id: text(node, PARTY[:legal_registration_id]),
           legal_form: text(node, PARTY[:legal_form]),
           vat_identifier: text(node, PARTY[:vat_identifier]),
+          tax_registration_identifier: text(node, PARTY[:tax_registration_identifier]),
           electronic_address: text(node, PARTY[:electronic_address]),
         )
 

@@ -81,6 +81,7 @@ party = Zugpferd::Model::TradeParty.new(name: "Company GmbH")
 | `legal_registration_id` | BT-30/47 | `String` | Legal registration ID |
 | `legal_form` | BT-33 | `String` | Company legal form |
 | `vat_identifier` | BT-31/48 | `String` | VAT identifier |
+| `tax_registration_identifier` | BT-32 | `String` | Seller tax registration identifier, e.g. the German tax number (seller only) |
 | `electronic_address` | BT-34/49 | `String` | Electronic address |
 | `electronic_address_scheme` | BT-34-1/49-1 | `String` | Scheme ID (e.g. "EM") |
 | `postal_address` | BG-5/8 | `PostalAddress` | Postal address |
