@@ -166,7 +166,9 @@ module Zugpferd
       # Price (BG-29)
       PRICE = "ram:SpecifiedLineTradeAgreement/ram:NetPriceProductTradePrice"
       PRICE_FIELDS = {
-        amount: "ram:ChargeAmount",
+        amount:                 "ram:ChargeAmount",
+        base_quantity:          "ram:BasisQuantity",
+        base_quantity_unit_code: "ram:BasisQuantity/@unitCode",
       }.freeze
     end
   end

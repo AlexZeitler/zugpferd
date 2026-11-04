@@ -155,7 +155,9 @@ module Zugpferd
       # Price (BG-29)
       PRICE = "cac:Price"
       PRICE_FIELDS = {
-        amount: "cbc:PriceAmount",
+        amount:                 "cbc:PriceAmount",
+        base_quantity:          "cbc:BaseQuantity",
+        base_quantity_unit_code: "cbc:BaseQuantity/@unitCode",
       }.freeze
     end
   end

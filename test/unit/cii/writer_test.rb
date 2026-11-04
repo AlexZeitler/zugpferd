@@ -394,6 +394,41 @@ class CIIWriterTest < Minitest::Test
     assert_equal "H87", quantity["unitCode"]
   end
 
+  def test_writes_price_base_quantity_after_charge_amount
+    invoice = full_invoice
+    invoice.line_items.first.price.base_quantity = BigDecimal("100")
+    invoice.line_items.first.price.base_quantity_unit_code = "C62"
+    price = write(invoice).at_xpath("#{LINE}/ram:SpecifiedLineTradeAgreement/ram:NetPriceProductTradePrice", CII_NS)
+
+    assert_equal %w[ChargeAmount BasisQuantity], child_names(price)
+    assert_equal "100", text(price, "ram:BasisQuantity")
+    assert_equal "C62", price.at_xpath("ram:BasisQuantity", CII_NS)["unitCode"]
+  end
+
+  def test_writes_price_base_quantity_without_unit_code
+    invoice = full_invoice
+    invoice.line_items.first.price.base_quantity = BigDecimal("100")
+    quantity = write(invoice).at_xpath("#{LINE}/ram:SpecifiedLineTradeAgreement//ram:BasisQuantity", CII_NS)
+
+    assert_nil quantity["unitCode"]
+  end
+
+  def test_omits_price_base_quantity_by_default
+    price = write(full_invoice).at_xpath("#{LINE}/ram:SpecifiedLineTradeAgreement/ram:NetPriceProductTradePrice", CII_NS)
+
+    assert_equal %w[ChargeAmount], child_names(price)
+  end
+
+  def test_price_base_quantity_survives_roundtrip
+    invoice = full_invoice
+    invoice.line_items.first.price.base_quantity = BigDecimal("100")
+    invoice.line_items.first.price.base_quantity_unit_code = "C62"
+    price = Zugpferd::CII::Reader.new.read(Zugpferd::CII::Writer.new.write(invoice)).line_items.first.price
+
+    assert_equal BigDecimal("100"), price.base_quantity
+    assert_equal "C62", price.base_quantity_unit_code
+  end
+
   def test_writes_line_item_tax
     tax = write(full_invoice).at_xpath("#{LINE}/ram:SpecifiedLineTradeSettlement/ram:ApplicableTradeTax", CII_NS)
 

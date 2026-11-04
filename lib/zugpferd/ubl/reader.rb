@@ -204,6 +204,8 @@ module Zugpferd
 
         Model::Price.new(
           amount: text(node, PRICE_FIELDS[:amount]),
+          base_quantity: parse_decimal(text(node, PRICE_FIELDS[:base_quantity])),
+          base_quantity_unit_code: node.at_xpath(PRICE_FIELDS[:base_quantity_unit_code], @ns)&.text,
         )
       end
 

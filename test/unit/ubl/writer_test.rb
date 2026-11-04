@@ -74,6 +74,30 @@ class UBLWriterTest < Minitest::Test
     assert_equal "PO-4711", Zugpferd::UBL::Reader.new.read(xml).purchase_order_reference
   end
 
+  def test_writes_price_base_quantity_after_price_amount
+    price = write(build_document(Invoice, line_with_price(base_quantity: BigDecimal("100"), base_quantity_unit_code: "C62")))
+      .at_xpath("/ubl:Invoice/cac:InvoiceLine/cac:Price", UBL_NS)
+
+    assert_equal %w[PriceAmount BaseQuantity], price.element_children.map(&:name)
+    assert_equal "100", xpath_text(price, "cbc:BaseQuantity")
+    assert_equal "C62", price.at_xpath("cbc:BaseQuantity", UBL_NS)["unitCode"]
+  end
+
+  def test_omits_price_base_quantity_by_default
+    price = write(build_document(Invoice, line_with_price)).at_xpath("//cac:Price", UBL_NS)
+
+    assert_equal %w[PriceAmount], price.element_children.map(&:name)
+  end
+
+  def test_price_base_quantity_survives_roundtrip
+    line = line_with_price(base_quantity: BigDecimal("100"), base_quantity_unit_code: "C62")
+    read = Zugpferd::UBL::Reader.new.read(Zugpferd::UBL::Writer.new.write(build_document(Invoice, line)))
+    price = read.line_items.first.price
+
+    assert_equal BigDecimal("100"), price.base_quantity
+    assert_equal "C62", price.base_quantity_unit_code
+  end
+
   def test_writes_line_item_period_before_item
     doc = write(build_document(Invoice, line_with_period))
     line = doc.at_xpath("/ubl:Invoice/cac:InvoiceLine", UBL_NS)
@@ -122,6 +146,13 @@ class UBLWriterTest < Minitest::Test
     document = klass.new(number: "RE-1", issue_date: Date.new(2024, 6, 15))
     document.line_items << line
     document
+  end
+
+  def line_with_price(**price_attributes)
+    LineItem.new(
+      id: "1", invoiced_quantity: "1", unit_code: "C62", line_extension_amount: "10",
+      item: Item.new(name: "Widget"), price: Price.new(amount: "10", **price_attributes)
+    )
   end
 
   def invoice_with_period
