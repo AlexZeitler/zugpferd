@@ -4,6 +4,30 @@ class UBLWriterTest < Minitest::Test
   include XmlHelper
   include Zugpferd::Model
 
+  def test_writes_seller_tax_registration_identifier
+    doc = write(invoice_with_seller_tax_ids)
+    schemes = doc.xpath("/ubl:Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme", UBL_NS)
+
+    assert_equal %w[DE123456789 201/113/40209], schemes.map { |s| xpath_text(s, "cbc:CompanyID") }
+    assert_equal %w[VAT FC], schemes.map { |s| xpath_text(s, "cac:TaxScheme/cbc:ID") }
+  end
+
+  def test_omits_tax_registration_identifier_by_default
+    invoice = invoice_with_seller_tax_ids
+    invoice.seller.tax_registration_identifier = nil
+    schemes = write(invoice).xpath("//cac:AccountingSupplierParty//cac:PartyTaxScheme/cac:TaxScheme/cbc:ID", UBL_NS)
+
+    assert_equal %w[VAT], schemes.map(&:text)
+  end
+
+  def test_seller_tax_registration_identifier_survives_roundtrip
+    xml = Zugpferd::UBL::Writer.new.write(invoice_with_seller_tax_ids)
+    seller = Zugpferd::UBL::Reader.new.read(xml).seller
+
+    assert_equal "201/113/40209", seller.tax_registration_identifier
+    assert_equal "DE123456789", seller.vat_identifier
+  end
+
   def test_writes_invoicing_period
     doc = write(invoice_with_period)
 
@@ -190,6 +214,14 @@ class UBLWriterTest < Minitest::Test
   end
 
   private
+
+  def invoice_with_seller_tax_ids
+    invoice = Invoice.new(number: "RE-1", issue_date: Date.new(2024, 6, 15))
+    invoice.seller = TradeParty.new(
+      name: "Seller GmbH", vat_identifier: "DE123456789", tax_registration_identifier: "201/113/40209"
+    )
+    invoice
+  end
 
   def line_with_period
     LineItem.new(

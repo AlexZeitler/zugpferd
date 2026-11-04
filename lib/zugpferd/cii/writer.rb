@@ -120,6 +120,12 @@ module Zugpferd
               xml["ram"].ID(party.vat_identifier, schemeID: "VA")
             end
           end
+
+          if party.tax_registration_identifier
+            xml["ram"].SpecifiedTaxRegistration do
+              xml["ram"].ID(party.tax_registration_identifier, schemeID: "FC")
+            end
+          end
         end
       end
 
