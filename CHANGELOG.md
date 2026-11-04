@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-04
+
+### Added
+
+- Purchase order reference (BT-13) in data model, UBL and CII readers/writers
+- Preceding invoice reference (BG-3) with number (BT-25) and issue date (BT-26) in data model, UBL and CII readers/writers. CII carries only the first reference
+- Item price base quantity (BT-149) and its unit code (BT-150) in UBL and CII readers/writers. `Price#base_quantity` existed before but was never read or written
+
+### Fixed
+
+- UBL writer: write the payment due date (BT-9) of credit notes as `cac:PaymentMeans/cbc:PaymentDueDate` instead of `cbc:DueDate`, which CreditNote-2 does not allow. Without payment instructions (BG-16) the due date is not written
+- Docs: label `PaymentInstructions#note` as payment terms (BT-20) instead of BT-82
+
+### Changed
+
+- UBL reader: read the payment due date (BT-9) of credit notes from `cac:PaymentMeans/cbc:PaymentDueDate`. A `cbc:DueDate` in a credit note is no longer read
+
 ## [0.5.1] - 2026-11-03
 
 ### Fixed
