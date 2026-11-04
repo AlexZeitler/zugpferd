@@ -6,7 +6,8 @@ module Zugpferd
     class Price
       # @return [BigDecimal] BT-146 Item net price
       # @return [BigDecimal, nil] BT-149 Item price base quantity
-      attr_accessor :amount, :base_quantity
+      # @return [String, nil] BT-150 Item price base quantity unit of measure code
+      attr_accessor :amount, :base_quantity, :base_quantity_unit_code
 
       # @param amount [String, BigDecimal] BT-146 Item net price
       # @param rest [Hash] additional attributes set via accessors

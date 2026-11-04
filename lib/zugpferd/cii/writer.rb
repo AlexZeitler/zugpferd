@@ -317,6 +317,11 @@ module Zugpferd
             if line.price
               xml["ram"].NetPriceProductTradePrice do
                 xml["ram"].ChargeAmount format_decimal(line.price.amount)
+                if line.price.base_quantity
+                  attrs = {}
+                  attrs[:unitCode] = line.price.base_quantity_unit_code if line.price.base_quantity_unit_code
+                  xml["ram"].BasisQuantity(format_decimal(line.price.base_quantity), attrs)
+                end
               end
             end
           end

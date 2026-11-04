@@ -330,6 +330,11 @@ module Zugpferd
       def build_price(xml, price, currency_code)
         xml["cac"].Price do
           xml["cbc"].PriceAmount(format_decimal(price.amount), currencyID: currency_code)
+          if price.base_quantity
+            attrs = {}
+            attrs[:unitCode] = price.base_quantity_unit_code if price.base_quantity_unit_code
+            xml["cbc"].BaseQuantity(format_decimal(price.base_quantity), attrs)
+          end
         end
       end
 

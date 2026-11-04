@@ -163,6 +163,8 @@ price = Zugpferd::Model::Price.new(amount: "100.00")
 | Attribute | BT | Type | Description |
 |-----------|-----|------|-------------|
 | `amount` | BT-146 | `String` | Item net price (required) |
+| `base_quantity` | BT-149 | `BigDecimal` | Item price base quantity |
+| `base_quantity_unit_code` | BT-150 | `String` | Unit of measure code of the base quantity |
 
 ## MonetaryTotals (BG-22)
 
