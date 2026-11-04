@@ -6,7 +6,7 @@ module Zugpferd
       # @return [String] BT-81 Payment means type code
       # @return [String, nil] BT-83 Remittance information
       # @return [String, nil] BT-84 Payment account identifier (IBAN)
-      # @return [String, nil] BT-82 Payment terms note
+      # @return [String, nil] BT-20 Payment terms
       # @return [String, nil] BT-87 Payment card primary account number
       # @return [String, nil] BT-88 Payment card holder name
       # @return [String, nil] Card network ID (UBL-only, required in CardAccount)
