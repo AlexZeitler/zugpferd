@@ -51,7 +51,7 @@ module Zugpferd
           customization_id: text(root, INVOICE[:customization_id]),
           profile_id: text(root, INVOICE[:profile_id]),
           note: text(root, INVOICE[:note]),
-          seller: build_party(root.at_xpath(SELLER, @ns)),
+          seller: build_party(root.at_xpath(SELLER, @ns), seller: true),
           buyer: build_party(root.at_xpath(BUYER, @ns)),
           line_items: root.xpath(line_element, @ns).map { |n| build_line_item(n) },
           allowance_charges: root.xpath(ALLOWANCE_CHARGE, @ns).map { |n| build_allowance_charge(n) },
@@ -62,7 +62,8 @@ module Zugpferd
         )
       end
 
-      def build_party(node)
+      # Seller-only terms are read only for the seller
+      def build_party(node, seller: false)
         return nil unless node
 
         party = Model::TradeParty.new(
@@ -70,7 +71,7 @@ module Zugpferd
           trading_name: text(node, PARTY[:trading_name]),
           identifier: text(node, PARTY[:identifier]),
           legal_registration_id: text(node, PARTY[:legal_registration_id]),
-          legal_form: text(node, PARTY[:legal_form]),
+          legal_form: (text(node, PARTY[:legal_form]) if seller),
           vat_identifier: text(node, PARTY[:vat_identifier]),
           electronic_address: text(node, PARTY[:electronic_address]),
         )

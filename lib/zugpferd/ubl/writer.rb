@@ -68,7 +68,7 @@ module Zugpferd
       def build_supplier(xml, party, payment_instructions = nil)
         xml["cac"].AccountingSupplierParty do
           build_party(xml, party,
-            creditor_reference_id: payment_instructions&.creditor_reference_id)
+            creditor_reference_id: payment_instructions&.creditor_reference_id, seller: true)
         end
       end
 
@@ -78,7 +78,8 @@ module Zugpferd
         end
       end
 
-      def build_party(xml, party, creditor_reference_id: nil)
+      # Seller-only terms are written only for the seller
+      def build_party(xml, party, creditor_reference_id: nil, seller: false)
         xml["cac"].Party do
           if party.electronic_address
             attrs = {}
@@ -118,7 +119,7 @@ module Zugpferd
           xml["cac"].PartyLegalEntity do
             xml["cbc"].RegistrationName party.name
             xml["cbc"].CompanyID party.legal_registration_id if party.legal_registration_id
-            xml["cbc"].CompanyLegalForm party.legal_form if party.legal_form
+            xml["cbc"].CompanyLegalForm party.legal_form if seller && party.legal_form
           end
 
           build_contact(xml, party.contact) if party.contact

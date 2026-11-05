@@ -80,7 +80,7 @@ party = Zugpferd::Model::TradeParty.new(name: "Company GmbH")
 | `trading_name` | BT-28/45 | `String` | Trading name |
 | `identifier` | BT-29/46 | `String` | Party identifier |
 | `legal_registration_id` | BT-30/47 | `String` | Legal registration ID |
-| `legal_form` | BT-33 | `String` | Company legal form |
+| `legal_form` | BT-33 | `String` | Company legal form (seller only) |
 | `vat_identifier` | BT-31/48 | `String` | VAT identifier |
 | `electronic_address` | BT-34/49 | `String` | Electronic address |
 | `electronic_address_scheme` | BT-34-1/49-1 | `String` | Scheme ID (e.g. "EM") |
