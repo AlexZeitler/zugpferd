@@ -151,6 +151,27 @@ class CIIWriterTest < Minitest::Test
     assert_equal "DE123456789", seller.vat_identifier
   end
 
+  def test_omits_tax_registration_identifier_of_buyer
+    invoice = full_invoice
+    invoice.buyer.tax_registration_identifier = "99/999/99999"
+    ids = write(invoice).xpath("//ram:BuyerTradeParty/ram:SpecifiedTaxRegistration/ram:ID", CII_NS)
+
+    refute_includes ids.map { |id| id["schemeID"] }, "FC"
+  end
+
+  def test_ignores_tax_registration_identifier_of_buyer_when_reading
+    invoice = full_invoice
+    invoice.seller.tax_registration_identifier = "201/113/40209"
+    xml = Zugpferd::CII::Writer.new.write(invoice).sub(
+      "</ram:BuyerTradeParty>",
+      '<ram:SpecifiedTaxRegistration><ram:ID schemeID="FC">99/999/99999</ram:ID></ram:SpecifiedTaxRegistration></ram:BuyerTradeParty>'
+    )
+    read = Zugpferd::CII::Reader.new.read(xml)
+
+    assert_nil read.buyer.tax_registration_identifier
+    assert_equal "201/113/40209", read.seller.tax_registration_identifier
+  end
+
   def test_writes_party_electronic_address_with_scheme
     uri = write(full_invoice).at_xpath("#{SELLER}/ram:URIUniversalCommunication/ram:URIID", CII_NS)
 

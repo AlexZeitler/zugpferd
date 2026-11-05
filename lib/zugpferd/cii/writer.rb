@@ -74,7 +74,7 @@ module Zugpferd
       def build_agreement(xml, doc)
         xml["ram"].ApplicableHeaderTradeAgreement do
           xml["ram"].BuyerReference doc.buyer_reference if doc.buyer_reference
-          build_party(xml, "SellerTradeParty", doc.seller) if doc.seller
+          build_party(xml, "SellerTradeParty", doc.seller, seller: true) if doc.seller
           build_party(xml, "BuyerTradeParty", doc.buyer) if doc.buyer
           build_buyer_order_reference(xml, doc) if doc.purchase_order_reference
         end
@@ -86,7 +86,8 @@ module Zugpferd
         end
       end
 
-      def build_party(xml, element_name, party)
+      # BT-32 is only written for the seller
+      def build_party(xml, element_name, party, seller: false)
         xml["ram"].send(element_name) do
           if party.identifier
             xml["ram"].ID party.identifier
@@ -121,7 +122,7 @@ module Zugpferd
             end
           end
 
-          if party.tax_registration_identifier
+          if seller && party.tax_registration_identifier
             xml["ram"].SpecifiedTaxRegistration do
               xml["ram"].ID(party.tax_registration_identifier, schemeID: "FC")
             end
