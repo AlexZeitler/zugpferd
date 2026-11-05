@@ -28,6 +28,31 @@ class UBLWriterTest < Minitest::Test
     assert_equal "DE123456789", seller.vat_identifier
   end
 
+  def test_omits_tax_registration_identifier_of_buyer
+    invoice = invoice_with_seller_tax_ids
+    invoice.buyer = TradeParty.new(
+      name: "Buyer AG", vat_identifier: "DE987654321", tax_registration_identifier: "99/999/99999"
+    )
+    schemes = write(invoice).xpath("//cac:AccountingCustomerParty//cac:PartyTaxScheme/cac:TaxScheme/cbc:ID", UBL_NS)
+
+    assert_equal %w[VAT], schemes.map(&:text)
+  end
+
+  def test_ignores_tax_registration_identifier_of_buyer_when_reading
+    invoice = invoice_with_seller_tax_ids
+    invoice.buyer = TradeParty.new(name: "Buyer AG", vat_identifier: "DE987654321")
+    doc = write(invoice)
+    vat = doc.at_xpath("//cac:AccountingCustomerParty//cac:PartyTaxScheme", UBL_NS)
+    fc = vat.dup
+    fc.at_xpath("cbc:CompanyID", UBL_NS).content = "99/999/99999"
+    fc.at_xpath("cac:TaxScheme/cbc:ID", UBL_NS).content = "FC"
+    vat.add_next_sibling(fc)
+    read = Zugpferd::UBL::Reader.new.read(doc.to_xml)
+
+    assert_nil read.buyer.tax_registration_identifier
+    assert_equal "201/113/40209", read.seller.tax_registration_identifier
+  end
+
   def test_writes_invoicing_period
     doc = write(invoice_with_period)
 
