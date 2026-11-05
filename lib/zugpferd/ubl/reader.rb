@@ -71,7 +71,7 @@ module Zugpferd
           trading_name: text(node, PARTY[:trading_name]),
           identifier: text(node, PARTY[:identifier]),
           legal_registration_id: text(node, PARTY[:legal_registration_id]),
-          legal_form: text(node, PARTY[:legal_form]),
+          legal_form: (text(node, PARTY[:legal_form]) if seller),
           vat_identifier: text(node, PARTY[:vat_identifier]),
           tax_registration_identifier: (text(node, PARTY[:tax_registration_identifier]) if seller),
           electronic_address: text(node, PARTY[:electronic_address]),

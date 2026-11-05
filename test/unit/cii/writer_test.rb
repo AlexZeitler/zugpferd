@@ -208,6 +208,25 @@ class CIIWriterTest < Minitest::Test
     assert_empty agreement.element_children
   end
 
+  def test_writes_legal_form_of_seller_only
+    invoice = full_invoice
+    invoice.buyer.legal_form = "AG"
+    doc = write(invoice)
+
+    assert_equal "GmbH", text(doc, "//ram:SellerTradeParty/ram:Description")
+    assert_nil doc.at_xpath("//ram:BuyerTradeParty/ram:Description", CII_NS)
+  end
+
+  def test_ignores_legal_form_of_buyer_when_reading
+    xml = Zugpferd::CII::Writer.new.write(full_invoice).sub(
+      "</ram:BuyerTradeParty>", "<ram:Description>AG</ram:Description></ram:BuyerTradeParty>"
+    )
+    read = Zugpferd::CII::Reader.new.read(xml)
+
+    assert_nil read.buyer.legal_form
+    assert_equal "GmbH", read.seller.legal_form
+  end
+
   def test_writes_delivery_date
     date = write(full_invoice).at_xpath(
       "//ram:ApplicableHeaderTradeDelivery/ram:ActualDeliverySupplyChainEvent/ram:OccurrenceDateTime/udt:DateTimeString",

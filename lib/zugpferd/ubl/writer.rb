@@ -128,7 +128,7 @@ module Zugpferd
           xml["cac"].PartyLegalEntity do
             xml["cbc"].RegistrationName party.name
             xml["cbc"].CompanyID party.legal_registration_id if party.legal_registration_id
-            xml["cbc"].CompanyLegalForm party.legal_form if party.legal_form
+            xml["cbc"].CompanyLegalForm party.legal_form if seller && party.legal_form
           end
 
           build_contact(xml, party.contact) if party.contact

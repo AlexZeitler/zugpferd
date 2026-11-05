@@ -118,6 +118,24 @@ class UBLWriterTest < Minitest::Test
     assert_equal Date.new(2024, 6, 29), read.due_date
   end
 
+  def test_writes_legal_form_of_seller_only
+    doc = write(invoice_with_legal_forms)
+
+    assert_equal "Handelsregister Bremen HRB 1", xpath_text(doc, "//cac:AccountingSupplierParty//cbc:CompanyLegalForm")
+    assert_nil doc.at_xpath("//cac:AccountingCustomerParty//cbc:CompanyLegalForm", UBL_NS)
+  end
+
+  def test_ignores_legal_form_of_buyer_when_reading
+    xml = Zugpferd::UBL::Writer.new.write(invoice_with_legal_forms).sub(
+      %r{(<cac:AccountingCustomerParty>.*?)(</cac:PartyLegalEntity>)}m,
+      '\\1<cbc:CompanyLegalForm>AG</cbc:CompanyLegalForm>\\2'
+    )
+    read = Zugpferd::UBL::Reader.new.read(xml)
+
+    assert_nil read.buyer.legal_form
+    assert_equal "Handelsregister Bremen HRB 1", read.seller.legal_form
+  end
+
   def test_writes_purchase_order_reference
     doc = write(invoice_with_order_reference)
 
@@ -297,5 +315,12 @@ class UBLWriterTest < Minitest::Test
     credit_note = CreditNote.new(number: "GS-1", issue_date: Date.new(2024, 6, 15), due_date: Date.new(2024, 6, 29))
     credit_note.payment_instructions = PaymentInstructions.new(payment_means_code: "58")
     credit_note
+  end
+
+  def invoice_with_legal_forms
+    invoice = Invoice.new(number: "RE-1", issue_date: Date.new(2024, 6, 15))
+    invoice.seller = TradeParty.new(name: "Seller GmbH", legal_form: "Handelsregister Bremen HRB 1")
+    invoice.buyer = TradeParty.new(name: "Buyer AG", legal_form: "AG")
+    invoice
   end
 end

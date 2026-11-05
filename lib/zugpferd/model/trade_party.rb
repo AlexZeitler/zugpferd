@@ -10,7 +10,7 @@ module Zugpferd
       # @return [String, nil] BT-28/BT-45 Trading name
       # @return [String, nil] BT-29/BT-46 Party identifier
       # @return [String, nil] BT-30/BT-47 Legal registration identifier
-      # @return [String, nil] BT-33 Company legal form
+      # @return [String, nil] BT-33 Company legal form (seller only)
       # @return [String, nil] BT-31/BT-48 VAT identifier
       # @return [String, nil] BT-32 Seller tax registration identifier (seller only)
       # @return [String, nil] BT-34/BT-49 Electronic address

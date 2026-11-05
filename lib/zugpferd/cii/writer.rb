@@ -95,7 +95,7 @@ module Zugpferd
 
           xml["ram"].Name party.name
 
-          xml["ram"].Description party.legal_form if party.legal_form
+          xml["ram"].Description party.legal_form if seller && party.legal_form
 
           if party.legal_registration_id || party.trading_name
             xml["ram"].SpecifiedLegalOrganization do
