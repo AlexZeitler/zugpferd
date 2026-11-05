@@ -86,7 +86,7 @@ module Zugpferd
         end
       end
 
-      # BT-32 is only written for the seller
+      # Seller-only terms are written only for the seller
       def build_party(xml, element_name, party, seller: false)
         xml["ram"].send(element_name) do
           if party.identifier

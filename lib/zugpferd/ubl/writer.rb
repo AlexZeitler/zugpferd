@@ -78,7 +78,7 @@ module Zugpferd
         end
       end
 
-      # BT-32 is only written for the seller
+      # Seller-only terms are written only for the seller
       def build_party(xml, party, creditor_reference_id: nil, seller: false)
         xml["cac"].Party do
           if party.electronic_address

@@ -69,7 +69,7 @@ module Zugpferd
         )
       end
 
-      # BT-32 is only read for the seller
+      # Seller-only terms are read only for the seller
       def build_party(node, seller: false)
         return nil unless node
 
