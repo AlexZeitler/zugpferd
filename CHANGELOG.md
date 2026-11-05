@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-05
+
+### Added
+
+- Seller tax registration identifier (BT-32) in data model, UBL and CII readers/writers. It is written and read for the seller only
+
+### Changed
+
+- UBL and CII readers/writers: write and read the seller additional legal information (BT-33, `legal_form`) for the seller only. A buyer value is no longer written, and the readers return `nil` for it on the buyer
+
 ## [0.6.0] - 2026-11-04
 
 ### Added
