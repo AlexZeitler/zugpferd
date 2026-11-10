@@ -26,6 +26,8 @@ module Zugpferd
       # Delivery (BG-13)
       DELIVERY = "#{TRANSACTION}/ram:ApplicableHeaderTradeDelivery"
       DELIVERY_DATE = "ram:ActualDeliverySupplyChainEvent/ram:OccurrenceDateTime/udt:DateTimeString"
+      # Deliver to address (BG-15), fields as in ADDRESS
+      DELIVER_TO_ADDRESS = "ram:ShipToTradeParty/ram:PostalTradeAddress"
 
       # Settlement (contains currency, payment, tax, totals)
       SETTLEMENT = "#{TRANSACTION}/ram:ApplicableHeaderTradeSettlement"

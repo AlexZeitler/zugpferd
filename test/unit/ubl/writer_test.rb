@@ -53,6 +53,40 @@ class UBLWriterTest < Minitest::Test
     assert_equal "201/113/40209", read.seller.tax_registration_identifier
   end
 
+  def test_writes_deliver_to_address_after_delivery_date
+    delivery = write(invoice_with_deliver_to_address).at_xpath("/ubl:Invoice/cac:Delivery", UBL_NS)
+    address = delivery.at_xpath("cac:DeliveryLocation/cac:Address", UBL_NS)
+
+    assert_equal %w[ActualDeliveryDate DeliveryLocation], delivery.element_children.map(&:name)
+    assert_equal %w[StreetName CityName PostalZone Country], address.element_children.map(&:name)
+    assert_equal "Lagerstr. 1", xpath_text(address, "cbc:StreetName")
+    assert_equal "Wien", xpath_text(address, "cbc:CityName")
+    assert_equal "1100", xpath_text(address, "cbc:PostalZone")
+    assert_equal "AT", xpath_text(address, "cac:Country/cbc:IdentificationCode")
+  end
+
+  def test_writes_delivery_with_deliver_to_address_only
+    invoice = invoice_with_deliver_to_address
+    invoice.delivery_date = nil
+    delivery = write(invoice).at_xpath("/ubl:Invoice/cac:Delivery", UBL_NS)
+
+    assert_equal %w[DeliveryLocation], delivery.element_children.map(&:name)
+  end
+
+  def test_omits_delivery_without_date_and_deliver_to_address
+    assert_nil write(invoice_with_period).at_xpath("/ubl:Invoice/cac:Delivery", UBL_NS)
+  end
+
+  def test_deliver_to_address_survives_roundtrip
+    xml = Zugpferd::UBL::Writer.new.write(invoice_with_deliver_to_address)
+    address = Zugpferd::UBL::Reader.new.read(xml).deliver_to_address
+
+    assert_equal "Lagerstr. 1", address.street_name
+    assert_equal "Wien", address.city_name
+    assert_equal "1100", address.postal_zone
+    assert_equal "AT", address.country_code
+  end
+
   def test_writes_invoicing_period
     doc = write(invoice_with_period)
 
@@ -292,6 +326,15 @@ class UBLWriterTest < Minitest::Test
     invoice.buyer_reference = "04011000-12345-34"
     invoice.invoicing_period_start_date = Date.new(2024, 6, 1)
     invoice.invoicing_period_end_date = Date.new(2024, 6, 30)
+    invoice
+  end
+
+  def invoice_with_deliver_to_address
+    invoice = invoice_with_period
+    invoice.delivery_date = Date.new(2024, 6, 10)
+    invoice.deliver_to_address = PostalAddress.new(
+      street_name: "Lagerstr. 1", city_name: "Wien", postal_zone: "1100", country_code: "AT"
+    )
     invoice
   end
 

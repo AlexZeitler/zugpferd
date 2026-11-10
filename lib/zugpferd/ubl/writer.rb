@@ -56,7 +56,7 @@ module Zugpferd
 
         build_supplier(xml, doc.seller, doc.payment_instructions) if doc.seller
         build_customer(xml, doc.buyer) if doc.buyer
-        build_delivery(xml, doc) if doc.delivery_date
+        build_delivery(xml, doc) if doc.delivery_date || doc.deliver_to_address
         build_payment_means(xml, doc.payment_instructions, doc.due_date) if doc.payment_instructions
         build_payment_terms(xml, doc.payment_instructions) if doc.payment_instructions&.note
         doc.allowance_charges.each { |ac| build_allowance_charge(xml, ac, doc.currency_code) }
@@ -137,12 +137,16 @@ module Zugpferd
 
       def build_postal_address(xml, addr)
         xml["cac"].PostalAddress do
-          xml["cbc"].StreetName addr.street_name if addr.street_name
-          xml["cbc"].CityName addr.city_name if addr.city_name
-          xml["cbc"].PostalZone addr.postal_zone if addr.postal_zone
-          xml["cac"].Country do
-            xml["cbc"].IdentificationCode addr.country_code
-          end
+          build_address_fields(xml, addr)
+        end
+      end
+
+      def build_address_fields(xml, addr)
+        xml["cbc"].StreetName addr.street_name if addr.street_name
+        xml["cbc"].CityName addr.city_name if addr.city_name
+        xml["cbc"].PostalZone addr.postal_zone if addr.postal_zone
+        xml["cac"].Country do
+          xml["cbc"].IdentificationCode addr.country_code
         end
       end
 
@@ -178,7 +182,14 @@ module Zugpferd
 
       def build_delivery(xml, doc)
         xml["cac"].Delivery do
-          xml["cbc"].ActualDeliveryDate doc.delivery_date.to_s
+          xml["cbc"].ActualDeliveryDate doc.delivery_date.to_s if doc.delivery_date
+          if doc.deliver_to_address
+            xml["cac"].DeliveryLocation do
+              xml["cac"].Address do
+                build_address_fields(xml, doc.deliver_to_address)
+              end
+            end
+          end
         end
       end
 

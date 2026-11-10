@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Deliver to address (BG-15) with street (BT-75), city (BT-77), post code (BT-78) and country code (BT-80) in data model, UBL and CII readers/writers
+
 ## [0.7.0] - 2026-11-05
 
 ### Added
