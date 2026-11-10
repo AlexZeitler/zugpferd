@@ -49,6 +49,7 @@ module Zugpferd
           issue_date: parse_cii_date(text(root, INVOICE[:issue_date])),
           due_date: parse_cii_date(settlement ? text(settlement, PAYMENT_TERMS_DUE_DATE) : nil),
           delivery_date: parse_cii_date(delivery ? text(delivery, DELIVERY_DATE) : nil),
+          deliver_to_address: build_deliver_to_address(delivery),
           invoicing_period_start_date: parse_cii_date(period ? text(period, BILLING_PERIOD_FIELDS[:start_date]) : nil),
           invoicing_period_end_date: parse_cii_date(period ? text(period, BILLING_PERIOD_FIELDS[:end_date]) : nil),
           type_code: text(root, INVOICE[:type_code]),
@@ -103,6 +104,11 @@ module Zugpferd
           city_name: text(node, ADDRESS[:city_name]),
           postal_zone: text(node, ADDRESS[:postal_zone]),
         )
+      end
+
+      def build_deliver_to_address(delivery_node)
+        addr_node = delivery_node&.at_xpath(DELIVER_TO_ADDRESS, NS)
+        build_postal_address(addr_node) if addr_node
       end
 
       def build_contact(node)

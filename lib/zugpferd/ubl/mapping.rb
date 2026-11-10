@@ -32,6 +32,8 @@ module Zugpferd
       # Delivery (BG-13)
       DELIVERY = "cac:Delivery"
       DELIVERY_DATE = "cbc:ActualDeliveryDate"
+      # Deliver to address (BG-15), fields as in ADDRESS
+      DELIVER_TO_ADDRESS = "cac:DeliveryLocation/cac:Address"
 
       # Invoicing period (BG-14)
       INVOICE_PERIOD = "cac:InvoicePeriod"

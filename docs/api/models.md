@@ -38,6 +38,7 @@ invoice = Zugpferd::Model::Invoice.new(
 | `due_date` | BT-9 | `Date` | Payment due date |
 | `type_code` | BT-3 | `String` | Invoice type code (see [supported types](#supported-type-codes)) |
 | `currency_code` | BT-5 | `String` | Document currency |
+| `deliver_to_address` | BG-15 | `PostalAddress` | Deliver to address |
 | `invoicing_period_start_date` | BT-73 | `Date` | Invoicing period start date |
 | `invoicing_period_end_date` | BT-74 | `Date` | Invoicing period end date |
 | `buyer_reference` | BT-10 | `String` | Buyer reference |
@@ -88,7 +89,7 @@ party = Zugpferd::Model::TradeParty.new(name: "Company GmbH")
 | `postal_address` | BG-5/8 | `PostalAddress` | Postal address |
 | `contact` | BG-6/9 | `Contact` | Contact information |
 
-## PostalAddress (BG-5 / BG-8)
+## PostalAddress (BG-5 / BG-8 / BG-15)
 
 ```ruby
 addr = Zugpferd::Model::PostalAddress.new(country_code: "DE")
@@ -96,10 +97,10 @@ addr = Zugpferd::Model::PostalAddress.new(country_code: "DE")
 
 | Attribute | BT | Type | Description |
 |-----------|-----|------|-------------|
-| `country_code` | BT-40/55 | `String` | Country code (required) |
-| `street_name` | BT-35/50 | `String` | Street |
-| `city_name` | BT-37/52 | `String` | City |
-| `postal_zone` | BT-38/53 | `String` | Postal code |
+| `country_code` | BT-40/55/80 | `String` | Country code (required) |
+| `street_name` | BT-35/50/75 | `String` | Street |
+| `city_name` | BT-37/52/77 | `String` | City |
+| `postal_zone` | BT-38/53/78 | `String` | Postal code |
 
 ## Contact (BG-6 / BG-9)
 

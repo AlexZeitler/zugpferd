@@ -243,6 +243,35 @@ class CIIWriterTest < Minitest::Test
     assert_empty delivery.element_children
   end
 
+  def test_writes_deliver_to_address_before_delivery_date
+    invoice = full_invoice
+    invoice.deliver_to_address = deliver_to_address
+    delivery = write(invoice).at_xpath("//ram:ApplicableHeaderTradeDelivery", CII_NS)
+    address = delivery.at_xpath("ram:ShipToTradeParty/ram:PostalTradeAddress", CII_NS)
+
+    assert_equal %w[ShipToTradeParty ActualDeliverySupplyChainEvent], child_names(delivery)
+    assert_equal %w[PostcodeCode LineOne CityName CountryID], child_names(address)
+    assert_equal "1100", text(address, "ram:PostcodeCode")
+    assert_equal "Lagerstr. 1", text(address, "ram:LineOne")
+    assert_equal "Wien", text(address, "ram:CityName")
+    assert_equal "AT", text(address, "ram:CountryID")
+  end
+
+  def test_deliver_to_address_survives_roundtrip
+    invoice = full_invoice
+    invoice.deliver_to_address = deliver_to_address
+    address = Zugpferd::CII::Reader.new.read(Zugpferd::CII::Writer.new.write(invoice)).deliver_to_address
+
+    assert_equal "Lagerstr. 1", address.street_name
+    assert_equal "Wien", address.city_name
+    assert_equal "1100", address.postal_zone
+    assert_equal "AT", address.country_code
+  end
+
+  def test_reads_no_deliver_to_address_without_ship_to_party
+    assert_nil Zugpferd::CII::Reader.new.read(Zugpferd::CII::Writer.new.write(full_invoice)).deliver_to_address
+  end
+
   def test_writes_invoicing_period
     invoice = minimal_invoice
     invoice.invoicing_period_start_date = Date.new(2024, 6, 1)
@@ -604,6 +633,10 @@ class CIIWriterTest < Minitest::Test
 
   def minimal_invoice
     Invoice.new(number: "RE-1", issue_date: Date.new(2024, 6, 15))
+  end
+
+  def deliver_to_address
+    PostalAddress.new(street_name: "Lagerstr. 1", city_name: "Wien", postal_zone: "1100", country_code: "AT")
   end
 
   def full_invoice

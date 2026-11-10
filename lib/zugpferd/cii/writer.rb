@@ -157,6 +157,11 @@ module Zugpferd
 
       def build_delivery(xml, doc)
         xml["ram"].ApplicableHeaderTradeDelivery do
+          if doc.deliver_to_address
+            xml["ram"].ShipToTradeParty do
+              build_postal_address(xml, doc.deliver_to_address)
+            end
+          end
           if doc.delivery_date
             xml["ram"].ActualDeliverySupplyChainEvent do
               xml["ram"].OccurrenceDateTime do
