@@ -7,7 +7,18 @@
   <cbc:DueDate>2024-01-25</cbc:DueDate>
   <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
   <cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
+  <cbc:AccountingCost>4217:65000</cbc:AccountingCost>
   <cbc:BuyerReference>BUYER-REF</cbc:BuyerReference>
+  <cac:OrderReference>
+    <cbc:ID>PO-12345</cbc:ID>
+    <cbc:SalesOrderID>SO-67890</cbc:SalesOrderID>
+  </cac:OrderReference>
+  <cac:ContractDocumentReference>
+    <cbc:ID>C-98765</cbc:ID>
+  </cac:ContractDocumentReference>
+  <cac:ProjectReference>
+    <cbc:ID>PROJ-4711</cbc:ID>
+  </cac:ProjectReference>
   <cac:AccountingSupplierParty>
     <cac:Party>
       <cbc:EndpointID schemeID="EM">seller@example.com</cbc:EndpointID>

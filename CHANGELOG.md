@@ -5,6 +5,9 @@
 ### Added
 
 - Payment account name (BT-85) in data model, UBL and CII readers/writers
+- Project reference (BT-11) in data model, UBL and CII readers/writers. UBL credit notes carry it as `cac:AdditionalDocumentReference` with document type code `50`, CII writes the mandatory `ram:Name` as "Project reference"
+- Contract reference (BT-12) and sales order reference (BT-14) in data model, UBL and CII readers/writers. Because UBL requires `cac:OrderReference/cbc:ID`, the UBL writer writes `NA` there when only the sales order reference is set, and the UBL reader returns a purchase order reference (BT-13) of `NA` as `nil`
+- Buyer accounting reference (BT-19) in data model, UBL (`cbc:AccountingCost`) and CII (`ram:ReceivableSpecifiedTradeAccountingAccount`) readers/writers
 
 ## [0.8.0] - 2026-11-10
 
