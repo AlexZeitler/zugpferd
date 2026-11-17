@@ -49,10 +49,19 @@ module Zugpferd
         end
         xml["cbc"].Note doc.note if doc.note
         xml["cbc"].DocumentCurrencyCode doc.currency_code
+        xml["cbc"].AccountingCost doc.buyer_accounting_reference if doc.buyer_accounting_reference
         xml["cbc"].BuyerReference doc.buyer_reference if doc.buyer_reference
         build_invoice_period(xml, doc) if doc.invoicing_period_start_date || doc.invoicing_period_end_date
-        build_order_reference(xml, doc) if doc.purchase_order_reference
+        build_order_reference(xml, doc) if doc.purchase_order_reference || doc.seller_order_reference
         doc.preceding_invoices.each { |pi| build_preceding_invoice(xml, pi) }
+
+        if doc.contract_reference
+          xml["cac"].ContractDocumentReference do
+            xml["cbc"].ID doc.contract_reference
+          end
+        end
+
+        build_project_reference(xml, doc.project_reference) if doc.project_reference
 
         build_supplier(xml, doc.seller, doc.payment_instructions) if doc.seller
         build_customer(xml, doc.buyer) if doc.buyer
@@ -165,9 +174,23 @@ module Zugpferd
         end
       end
 
+      def build_project_reference(xml, project_reference)
+        if @credit_note
+          xml["cac"].AdditionalDocumentReference do
+            xml["cbc"].ID project_reference
+            xml["cbc"].DocumentTypeCode PROJECT_REFERENCE_TYPE_CODE
+          end
+        else
+          xml["cac"].ProjectReference do
+            xml["cbc"].ID project_reference
+          end
+        end
+      end
+
       def build_order_reference(xml, doc)
         xml["cac"].OrderReference do
-          xml["cbc"].ID doc.purchase_order_reference
+          xml["cbc"].ID doc.purchase_order_reference || ORDER_REFERENCE_NOT_APPLICABLE
+          xml["cbc"].SalesOrderID doc.seller_order_reference if doc.seller_order_reference
         end
       end
 

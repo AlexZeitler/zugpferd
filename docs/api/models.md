@@ -42,7 +42,11 @@ invoice = Zugpferd::Model::Invoice.new(
 | `invoicing_period_start_date` | BT-73 | `Date` | Invoicing period start date |
 | `invoicing_period_end_date` | BT-74 | `Date` | Invoicing period end date |
 | `buyer_reference` | BT-10 | `String` | Buyer reference |
+| `project_reference` | BT-11 | `String` | Project reference |
+| `contract_reference` | BT-12 | `String` | Contract reference |
 | `purchase_order_reference` | BT-13 | `String` | Purchase order reference |
+| `seller_order_reference` | BT-14 | `String` | Sales order reference |
+| `buyer_accounting_reference` | BT-19 | `String` | Buyer accounting reference |
 | `customization_id` | BT-24 | `String` | Specification identifier |
 | `profile_id` | BT-23 | `String` | Business process type |
 | `note` | BT-22 | `String` | Invoice note |

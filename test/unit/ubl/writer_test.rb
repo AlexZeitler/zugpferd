@@ -110,6 +110,31 @@ class UBLWriterTest < Minitest::Test
     assert_equal names.index("BuyerReference") + 1, names.index("InvoicePeriod")
   end
 
+  def test_writes_buyer_accounting_reference_before_buyer_reference
+    invoice = invoice_with_period
+    invoice.buyer_accounting_reference = "4217:65000"
+    doc = write(invoice)
+    names = doc.root.element_children.map(&:name)
+
+    assert_equal "4217:65000", xpath_text(doc, "/ubl:Invoice/cbc:AccountingCost")
+    assert_equal %w[DocumentCurrencyCode AccountingCost BuyerReference],
+                 names[names.index("DocumentCurrencyCode"), 3]
+  end
+
+  def test_omits_buyer_accounting_reference_when_not_set
+    assert_nil write(invoice_with_period).at_xpath("/ubl:Invoice/cbc:AccountingCost", UBL_NS)
+  end
+
+  def test_buyer_accounting_reference_survives_roundtrip
+    invoice = invoice_with_period
+    invoice.buyer_accounting_reference = "4217:65000"
+    credit_note = credit_note_with_due_date
+    credit_note.buyer_accounting_reference = "4217:66000"
+
+    assert_equal "4217:65000", Zugpferd::UBL::Reader.new.read(Zugpferd::UBL::Writer.new.write(invoice)).buyer_accounting_reference
+    assert_equal "4217:66000", Zugpferd::UBL::Reader.new.read(Zugpferd::UBL::Writer.new.write(credit_note)).buyer_accounting_reference
+  end
+
   def test_writes_invoicing_period_in_credit_note
     credit_note = CreditNote.new(number: "GS-1", issue_date: Date.new(2024, 6, 15))
     credit_note.invoicing_period_start_date = Date.new(2024, 6, 1)
@@ -211,6 +236,61 @@ class UBLWriterTest < Minitest::Test
     xml = Zugpferd::UBL::Writer.new.write(invoice_with_order_reference)
 
     assert_equal "PO-4711", Zugpferd::UBL::Reader.new.read(xml).purchase_order_reference
+  end
+
+  def test_reads_purchase_order_reference_na_as_nil
+    invoice = invoice_with_period
+    invoice.seller_order_reference = "SO-67890"
+    doc = write(invoice)
+    read = Zugpferd::UBL::Reader.new.read(doc.to_xml)
+
+    assert_equal "NA", xpath_text(doc, "/ubl:Invoice/cac:OrderReference/cbc:ID")
+    assert_nil read.purchase_order_reference
+    assert_equal "SO-67890", read.seller_order_reference
+  end
+
+  def test_writes_project_reference_before_supplier
+    invoice = invoice_with_order_reference
+    invoice.contract_reference = "C-98765"
+    invoice.project_reference = "PROJ-1"
+    invoice.seller = TradeParty.new(name: "Seller GmbH")
+    doc = write(invoice)
+    names = doc.root.element_children.map(&:name)
+
+    assert_equal "PROJ-1", xpath_text(doc, "/ubl:Invoice/cac:ProjectReference/cbc:ID")
+    assert_equal %w[ContractDocumentReference ProjectReference AccountingSupplierParty],
+                 names[names.index("ContractDocumentReference"), 3]
+  end
+
+  def test_writes_project_reference_of_credit_note_as_additional_document_reference
+    credit_note = credit_note_with_due_date
+    credit_note.project_reference = "PROJ-1"
+    ref = write(credit_note).at_xpath("/*/cac:AdditionalDocumentReference", UBL_NS)
+
+    assert_equal %w[ID DocumentTypeCode], ref.element_children.map(&:name)
+    assert_equal "PROJ-1", xpath_text(ref, "cbc:ID")
+    assert_equal "50", xpath_text(ref, "cbc:DocumentTypeCode")
+  end
+
+  def test_project_reference_survives_roundtrip
+    invoice = invoice_with_period
+    invoice.project_reference = "PROJ-1"
+    credit_note = credit_note_with_due_date
+    credit_note.project_reference = "PROJ-2"
+
+    assert_equal "PROJ-1", Zugpferd::UBL::Reader.new.read(Zugpferd::UBL::Writer.new.write(invoice)).project_reference
+    assert_equal "PROJ-2", Zugpferd::UBL::Reader.new.read(Zugpferd::UBL::Writer.new.write(credit_note)).project_reference
+  end
+
+  def test_contract_and_seller_order_reference_survive_roundtrip
+    invoice = invoice_with_order_reference
+    invoice.contract_reference = "C-98765"
+    invoice.seller_order_reference = "SO-67890"
+    read = Zugpferd::UBL::Reader.new.read(Zugpferd::UBL::Writer.new.write(invoice))
+
+    assert_equal "PO-4711", read.purchase_order_reference
+    assert_equal "C-98765", read.contract_reference
+    assert_equal "SO-67890", read.seller_order_reference
   end
 
   def test_writes_price_base_quantity_after_price_amount

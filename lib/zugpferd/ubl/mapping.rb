@@ -21,6 +21,7 @@ module Zugpferd
         type_code:          "cbc:InvoiceTypeCode",
         currency_code:      "cbc:DocumentCurrencyCode",
         buyer_reference:    "cbc:BuyerReference",
+        buyer_accounting_reference: "cbc:AccountingCost",
         customization_id:   "cbc:CustomizationID",
         profile_id:         "cbc:ProfileID",
         note:               "cbc:Note",
@@ -42,8 +43,20 @@ module Zugpferd
         end_date:   "cbc:EndDate",
       }.freeze
 
+      # Project reference (BT-11). CreditNote-2 has no cac:ProjectReference,
+      # credit notes carry it as additional document reference with type code 50
+      PROJECT_REFERENCE = "cac:ProjectReference/cbc:ID"
+      PROJECT_REFERENCE_TYPE_CODE = "50"
+      CREDIT_NOTE_PROJECT_REFERENCE =
+        "cac:AdditionalDocumentReference[cbc:DocumentTypeCode='#{PROJECT_REFERENCE_TYPE_CODE}']/cbc:ID"
+      # Contract reference (BT-12)
+      CONTRACT_REFERENCE = "cac:ContractDocumentReference/cbc:ID"
       # Purchase order reference (BT-13)
       ORDER_REFERENCE = "cac:OrderReference/cbc:ID"
+      # Written as BT-13 when only BT-14 is set, because cbc:ID is mandatory
+      ORDER_REFERENCE_NOT_APPLICABLE = "NA"
+      # Sales order reference (BT-14)
+      SALES_ORDER_REFERENCE = "cac:OrderReference/cbc:SalesOrderID"
 
       # Preceding invoice reference (BG-3)
       PRECEDING_INVOICE = "cac:BillingReference/cac:InvoiceDocumentReference"

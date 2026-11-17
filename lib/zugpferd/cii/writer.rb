@@ -76,7 +76,27 @@ module Zugpferd
           xml["ram"].BuyerReference doc.buyer_reference if doc.buyer_reference
           build_party(xml, "SellerTradeParty", doc.seller, seller: true) if doc.seller
           build_party(xml, "BuyerTradeParty", doc.buyer) if doc.buyer
+
+          if doc.seller_order_reference
+            xml["ram"].SellerOrderReferencedDocument do
+              xml["ram"].IssuerAssignedID doc.seller_order_reference
+            end
+          end
+
           build_buyer_order_reference(xml, doc) if doc.purchase_order_reference
+
+          if doc.contract_reference
+            xml["ram"].ContractReferencedDocument do
+              xml["ram"].IssuerAssignedID doc.contract_reference
+            end
+          end
+
+          if doc.project_reference
+            xml["ram"].SpecifiedProcuringProject do
+              xml["ram"].ID doc.project_reference
+              xml["ram"].Name PROJECT_NAME
+            end
+          end
         end
       end
 
@@ -212,6 +232,12 @@ module Zugpferd
 
           # CII allows a single InvoiceReferencedDocument, so only the first BG-3 is written
           build_preceding_invoice(xml, doc.preceding_invoices.first) if doc.preceding_invoices.any?
+
+          if doc.buyer_accounting_reference
+            xml["ram"].ReceivableSpecifiedTradeAccountingAccount do
+              xml["ram"].ID doc.buyer_accounting_reference
+            end
+          end
         end
       end
 
