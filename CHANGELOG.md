@@ -6,6 +6,11 @@
 
 - Payment account name (BT-85) in data model, UBL and CII readers/writers
 
+### Removed
+
+- `Item#classification_codes` (BT-158). The attribute was never read or written by any reader or writer
+- Rake task `test:conformance`, its test file did not exist
+
 ## [0.8.0] - 2026-11-10
 
 ### Added

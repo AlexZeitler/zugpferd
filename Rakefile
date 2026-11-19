@@ -15,11 +15,6 @@ namespace :test do
     t.libs << "test"
     t.pattern = "test/integration/**/*_test.rb"
   end
-
-  Rake::TestTask.new(:conformance) do |t|
-    t.libs << "test"
-    t.pattern = "test/integration/conformance_test.rb"
-  end
 end
 
 desc "Download schemas and test suite"
