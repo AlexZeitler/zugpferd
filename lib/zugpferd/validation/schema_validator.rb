@@ -35,10 +35,10 @@ module Zugpferd
 
       def load_schema(key)
         @schema_cache[key] ||= begin
-          path = File.join(@schemas_path, XSD_PATHS.fetch(key))
-          Dir.chdir(File.dirname(path)) do
-            Nokogiri::XML::Schema(File.read(File.basename(path)))
-          end
+          # The document URL lets Nokogiri resolve relative imports without
+          # changing the working directory of the whole process.
+          path = File.expand_path(XSD_PATHS.fetch(key), @schemas_path)
+          Nokogiri::XML::Schema.from_document(Nokogiri::XML(File.read(path), path))
         end
       end
     end
