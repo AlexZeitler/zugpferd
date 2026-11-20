@@ -10,6 +10,10 @@
 - Buyer accounting reference (BT-19) in data model, UBL (`cbc:AccountingCost`) and CII (`ram:ReceivableSpecifiedTradeAccountingAccount`) readers/writers
 - `Zugpferd::PDF::Extractor` reads the embedded invoice XML from a ZUGFeRD / Factur-X / XRechnung PDF and hands it to the CII or UBL reader. It needs the `pdf-reader` gem, which is not a runtime dependency. The decompressed attachment size and the name tree depth are limited
 
+### Fixed
+
+- `Zugpferd::Validation::SchemaValidator` loads the XSD schemas without `Dir.chdir`. It no longer changes the working directory of the whole process, and it no longer raises a `RuntimeError` when another thread is inside a `Dir.chdir` block
+
 ## [0.8.0] - 2026-11-10
 
 ### Added
