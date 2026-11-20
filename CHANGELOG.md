@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-20
+
 ### Added
 
 - Payment account name (BT-85) in data model, UBL and CII readers/writers
