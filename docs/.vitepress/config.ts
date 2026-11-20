@@ -20,7 +20,8 @@ export default defineConfig({
           { text: 'Reading Documents', link: '/guide/reading' },
           { text: 'Writing Documents', link: '/guide/writing' },
           { text: 'Validation', link: '/guide/validation' },
-          { text: 'PDF/A-3 Embedding', link: '/guide/pdf-embedding' }
+          { text: 'PDF/A-3 Embedding', link: '/guide/pdf-embedding' },
+          { text: 'PDF Extraction', link: '/guide/pdf-extraction' }
         ]
       },
       {
@@ -30,7 +31,7 @@ export default defineConfig({
           { text: 'UBL Reader / Writer', link: '/api/ubl' },
           { text: 'CII Reader / Writer', link: '/api/cii' },
           { text: 'Validation', link: '/api/validation' },
-          { text: 'PDF Embedder', link: '/api/pdf' }
+          { text: 'PDF Embedder / Extractor', link: '/api/pdf' }
         ]
       }
     ],

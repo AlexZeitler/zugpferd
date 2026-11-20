@@ -10,6 +10,7 @@ Built for Ruby developers integrating XRechnung or ZUGFeRD e-invoicing into thei
 - UBL 2.1 Reader & Writer (Invoice and Credit Note)
 - UN/CEFACT CII Reader & Writer
 - PDF/A-3 embedding via Ghostscript — create ZUGFeRD / Factur-X hybrid invoices
+- PDF extraction — read the invoice XML from a received ZUGFeRD / Factur-X / XRechnung PDF (needs the `pdf-reader` gem)
 - XSD and Schematron validation (EN 16931 + XRechnung) — optional, requires Java + Saxon
 - Supported document types:
   - `380` — Commercial Invoice
@@ -123,6 +124,19 @@ embedder.embed(
   version: "2p1",
   conformance_level: "XRECHNUNG"  # use "EN 16931" for non-XRechnung invoices
 )
+```
+
+### Reading the invoice from a ZUGFeRD / Factur-X PDF
+
+Requires the [pdf-reader](https://github.com/yob/pdf-reader) gem in your Gemfile (`gem "pdf-reader", "~> 2.16"`). zugpferd does not install it.
+
+```ruby
+require "zugpferd"
+require "zugpferd/pdf"  # explicit opt-in
+
+result = Zugpferd::PDF::Extractor.new.extract(pdf_path: "rechnung.pdf")
+result.filename  # => "factur-x.xml"
+invoice = result.read  # CII::Reader or UBL::Reader
 ```
 
 ### Validating an invoice

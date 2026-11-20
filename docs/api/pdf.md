@@ -2,9 +2,9 @@
 outline: deep
 ---
 
-# PDF Embedder
+# PDF Embedder / Extractor
 
-Embed XML invoices into PDF/A-3 documents using Ghostscript. Loaded via `require "zugpferd/pdf"` (not included by default).
+Embed XML invoices into PDF/A-3 documents using Ghostscript, and read them back out of received PDFs. Loaded via `require "zugpferd/pdf"` (not included by default).
 
 ## Embedder
 
@@ -70,3 +70,49 @@ Inherits from `Zugpferd::Error`. Raised when the `gs` binary cannot be found in 
 ### `Zugpferd::PDF::Embedder::EmbedError`
 
 Inherits from `Zugpferd::Error`. Raised when Ghostscript returns a non-zero exit code, or when required vendor files (`zugferd.ps`, `default_rgb.icc`) are missing.
+
+## Extractor
+
+Reads the embedded invoice XML from a hybrid PDF. Needs the `pdf-reader` gem in your Gemfile; zugpferd does not install it. See [PDF Extraction](/guide/pdf-extraction).
+
+```ruby
+require "zugpferd/pdf"
+
+result = Zugpferd::PDF::Extractor.new.extract(pdf_path: "rechnung.pdf")
+invoice = result.read
+```
+
+### `new(max_xml_bytes: 10_485_760, max_name_tree_depth: 32)`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `max_xml_bytes` | `Integer` | `10_485_760` (10 MiB) | Largest decompressed attachment to accept |
+| `max_name_tree_depth` | `Integer` | `32` | Deepest `EmbeddedFiles` name tree level to visit |
+
+### `extract(pdf_path:) → Result`
+
+Finds the attachment named `factur-x.xml`, `xrechnung.xml`, `zugferd-invoice.xml` or `ZUGFeRD-invoice.xml`, first in the catalog's `/AF` array, then in the `EmbeddedFiles` name tree.
+
+**Raises:**
+
+| Exception | When |
+|-----------|------|
+| `Zugpferd::PDF::Extractor::PdfReaderNotFound` | the `pdf-reader` gem is not installed |
+| `Zugpferd::PDF::Extractor::InvoiceNotFound` | no attachment has an invoice file name |
+| `Zugpferd::PDF::Extractor::AmbiguousInvoice` | more than one attachment has one |
+| `Zugpferd::PDF::Extractor::LimitExceeded` | the attachment or the name tree passes a limit |
+| `Zugpferd::PDF::Extractor::ExtractError` | the PDF cannot be read, or the attachment uses a filter other than `FlateDecode` |
+| `ArgumentError` | the input file does not exist |
+
+### `Result`
+
+| Method | Returns |
+|--------|---------|
+| `xml` | `String` — the embedded XML, byte for byte |
+| `filename` | `String` — e.g. `"factur-x.xml"` |
+| `syntax` | `:cii`, `:ubl`, or `nil` for any other root element |
+| `read` | `Model::BillingDocument`, via `CII::Reader` or `UBL::Reader`; raises `UnsupportedSyntax` when `syntax` is `nil` (e.g. ZUGFeRD 1.0) |
+
+### Exceptions
+
+All inherit from `Zugpferd::Error`. `InvoiceNotFound`, `AmbiguousInvoice`, `LimitExceeded` and `UnsupportedSyntax` inherit from `Zugpferd::PDF::Extractor::ExtractError`.

@@ -89,6 +89,34 @@ class PdfEmbeddingTest < Minitest::Test
     end
   end
 
+  def test_extract_returns_the_embedded_xml_byte_for_byte
+    Dir.mktmpdir do |dir|
+      base_pdf = create_base_pdf(dir)
+      cii = Zugpferd::CII::Writer.new.write(build_sample_invoice)
+      ubl = Zugpferd::UBL::Writer.new.write(build_sample_invoice)
+
+      [
+        [cii, "2p1", "EN 16931", "factur-x.xml"],
+        [ubl, "2p1", "EN 16931", "factur-x.xml"],
+        [cii, "2p1", "XRECHNUNG", "xrechnung.xml"],
+        [cii, "2p0", "EN 16931", "zugferd-invoice.xml"],
+        [cii, "1p0", "BASIC", "ZUGFeRD-invoice.xml"],
+        [cii, "rc", "EN 16931", "ZUGFeRD-invoice.xml"],
+      ].each do |xml, version, level, filename|
+        output_pdf = File.join(dir, "roundtrip_#{version}_#{level.tr(" ", "_")}.pdf")
+        Zugpferd::PDF::Embedder.new.embed(
+          pdf_path: base_pdf, xml: xml, output_path: output_pdf,
+          version: version, conformance_level: level
+        )
+
+        result = Zugpferd::PDF::Extractor.new.extract(pdf_path: output_pdf)
+
+        assert_equal filename, result.filename, "file name for #{version} #{level}"
+        assert_equal xml.b, result.xml, "XML for #{version} #{level}"
+      end
+    end
+  end
+
   def test_embed_with_testsuite_fixture
     fixture = testsuite_cii_fixtures.first
     skip "No CII fixtures found" unless fixture
