@@ -10,6 +10,11 @@
 - Buyer accounting reference (BT-19) in data model, UBL (`cbc:AccountingCost`) and CII (`ram:ReceivableSpecifiedTradeAccountingAccount`) readers/writers
 - `Zugpferd::PDF::Extractor` reads the embedded invoice XML from a ZUGFeRD / Factur-X / XRechnung PDF and hands it to the CII or UBL reader. It needs the `pdf-reader` gem, which is not a runtime dependency. The decompressed attachment size and the name tree depth are limited
 
+### Removed
+
+- `Item#classification_codes` (BT-158). The attribute was never read or written by any reader or writer
+- Rake task `test:conformance`, its test file did not exist
+
 ## [0.8.0] - 2026-11-10
 
 ### Added
