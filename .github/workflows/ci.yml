@@ -4,7 +4,18 @@ on: [push, pull_request]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    services:
+      verapdf:
+        image: verapdf/rest:latest
+        ports:
+          - 8081:8080
 
     steps:
       - uses: actions/checkout@v7
@@ -19,8 +30,27 @@ jobs:
           ruby-version: "3.3"
           bundler-cache: true
 
+      - name: Install Ghostscript
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ghostscript
+
       - name: Download test suite
         run: bin/setup-schemas
+
+      - name: Build Mustangproject image
+        run: docker build -t zugpferd-mustang docker/mustang
+
+      - name: Wait for veraPDF
+        run: |
+          deadline=$((SECONDS + 120))
+          until [ "$(curl -s -o /dev/null --max-time 5 -w '%{http_code}' http://localhost:8081/api/info)" = "200" ]; do
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              echo "::error::veraPDF did not answer on http://localhost:8081/api/info within 120 seconds"
+              exit 1
+            fi
+            sleep 2
+          done
 
       - name: Run tests
         run: bundle exec rake test
