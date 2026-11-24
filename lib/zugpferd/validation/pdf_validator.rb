@@ -38,7 +38,8 @@ module Zugpferd
         uri = URI("#{@base_uri}/api/info")
         response = Net::HTTP.get_response(uri)
         response.code == "200"
-      rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, SocketError, Net::OpenTimeout
+      rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, SocketError, Net::OpenTimeout,
+             EOFError, Errno::ECONNRESET, Net::ReadTimeout
         false
       end
 
@@ -65,18 +66,21 @@ module Zugpferd
         end
 
         data = JSON.parse(response.body)
-        job = data.dig("report", "jobs", 0) || data.dig("report", "batchSummary") || {}
-        validation = job["validationResult"] || job
+        # veraPDF 1.30 returns validationResult as a list. A single object,
+        # the shape this method used to expect, is still accepted.
+        results = data.dig("report", "jobs", 0, "validationResult")
+        results = [results] if results.is_a?(Hash)
+        results = Array(results)
 
-        compliant = validation["compliant"] == true
-        failures = extract_failures(validation)
+        compliant = results.any? && results.all? { |r| r["compliant"] == true }
+        failures = results.flat_map { |r| extract_failures(r) }
 
         Result.new(compliant: compliant, failures: failures)
       end
 
       def extract_failures(validation)
-        details = validation["details"] || validation["rulesSummary"] || {}
-        rules = details["rules"] || []
+        details = validation["details"] || {}
+        rules = details["ruleSummaries"] || []
 
         rules.select { |r| r["status"] == "failed" }.map do |rule|
           {

@@ -1,0 +1,108 @@
+{"report":{"buildInformation":{"releaseDetails":[{
+  "id" : "core",
+  "version" : "1.30.3",
+  "buildDate" : 1791367260000
+},{
+  "id" : "verapdf-rest",
+  "version" : "1.30.3",
+  "buildDate" : 1793132700000
+},{
+  "id" : "validation-model",
+  "version" : "1.30.3",
+  "buildDate" : 1791380640000
+}]},"jobs":[{"itemDetails":{
+  "name" : "probe.pdf",
+  "size" : 2123
+},"validationResult":[ {
+  "details" : {
+    "passedRules" : 143,
+    "failedRules" : 3,
+    "passedChecks" : 136,
+    "failedChecks" : 3,
+    "ruleSummaries" : [ {
+      "ruleStatus" : "FAILED",
+      "specification" : "ISO 19005-3:2012",
+      "clause" : "6.1.9",
+      "testNumber" : 1,
+      "status" : "failed",
+      "failedChecks" : 1,
+      "description" : "The object number and generation number shall be separated by a single white-space character. The generation number and obj keyword shall be separated by a single white-space character. The object number and endobj keyword shall each be preceded by an EOL marker. The obj and endobj keywords shall each be followed by an EOL marker",
+      "object" : "CosIndirect",
+      "test" : "spacingCompliesPDFA",
+      "checks" : [ {
+        "status" : "failed",
+        "context" : "root/indirectObjects[5](2 0)",
+        "errorArguments" : [ ]
+      } ]
+    }, {
+      "ruleStatus" : "FAILED",
+      "specification" : "ISO 19005-3:2012",
+      "clause" : "6.1.7.1",
+      "testNumber" : 2,
+      "status" : "failed",
+      "failedChecks" : 1,
+      "description" : "The stream keyword shall be followed either by a CARRIAGE RETURN (0Dh) and LINE FEED (0Ah) character sequence or by a single LINE FEED (0Ah) character. The endstream keyword shall be preceded by an EOL marker",
+      "object" : "CosStream",
+      "test" : "streamKeywordCRLFCompliant == true && endstreamKeywordEOLCompliant == true",
+      "checks" : [ {
+        "status" : "failed",
+        "context" : "root/indirectObjects[2](5 0)/directObject[0]",
+        "errorArguments" : [ ]
+      } ]
+    }, {
+      "ruleStatus" : "FAILED",
+      "specification" : "ISO 19005-3:2012",
+      "clause" : "6.6.4",
+      "testNumber" : 1,
+      "status" : "failed",
+      "failedChecks" : 1,
+      "description" : "The PDF/A version and conformance level of a file shall be specified using the PDF/A Identification extension schema",
+      "object" : "MainXMPPackage",
+      "test" : "containsPDFAIdentification == true",
+      "checks" : [ {
+        "status" : "failed",
+        "context" : "root/document[0]/metadata[0](7 0 obj PDMetadata)/XMPPackage[0]",
+        "errorArguments" : [ ]
+      } ]
+    } ]
+  },
+  "jobEndStatus" : "normal",
+  "profileName" : "PDF/A-3b validation profile",
+  "statement" : "PDF file is not compliant with Validation Profile requirements.",
+  "compliant" : false
+} ],"processingTime":{
+  "start" : 1793792315706,
+  "finish" : 1793792315732,
+  "difference" : 26,
+  "duration" : "00:00:00.026"
+}}],"batchSummary":{
+  "duration" : {
+    "start" : 1793792315703,
+    "finish" : 1793792315735,
+    "difference" : 32,
+    "duration" : "00:00:00.032"
+  },
+  "totalJobs" : 1,
+  "outOfMemory" : 0,
+  "veraExceptions" : 0,
+  "validationSummary" : {
+    "failedJobCount" : 0,
+    "totalJobCount" : 1,
+    "compliantPdfaCount" : 0,
+    "nonCompliantPdfaCount" : 1,
+    "successfulJobCount" : 1
+  },
+  "failedParsingJobs" : 0,
+  "failedEncryptedJobs" : 0,
+  "featuresSummary" : {
+    "failedJobCount" : 0,
+    "totalJobCount" : 0,
+    "successfulJobCount" : 0
+  },
+  "repairSummary" : {
+    "failedJobCount" : 0,
+    "totalJobCount" : 0,
+    "successfulJobCount" : 0
+  },
+  "multiJob" : false
+}}}
