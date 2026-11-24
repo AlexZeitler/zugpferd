@@ -5,6 +5,7 @@
 ### Fixed
 
 - `Zugpferd::Validation::PdfValidator` reads the response of veraPDF 1.30. `validationResult` is a list there, and the failed rules are under `details.ruleSummaries`. It no longer raises a `TypeError`, and it lists the failed rules. `available?` also returns `false` when the connection opens and then breaks
+- `Zugpferd::PDF::Embedder` produces PDF/A-3 compliant output with Ghostscript before 10.04.0. The Catalog lacked the Associated Files array `/AF`, and veraPDF and Mustangproject rejected the PDF under ISO 19005-3, clause 6.8. The gem now sets `/AF` itself for these versions
 
 ## [0.9.0] - 2026-11-20
 
