@@ -70,6 +70,11 @@ module Zugpferd
         File.join(vendor_dir, "default_rgb.icc")
       end
 
+      # Sets /AF in the Catalog where Ghostscript before 10.04.0 does not.
+      def catalog_af_ps_path
+        File.expand_path("catalog_af.ps", __dir__)
+      end
+
       def write_xml_tempfile(xml)
         tmpfile = Tempfile.new(["zugferd", ".xml"])
         tmpfile.binmode
@@ -118,6 +123,7 @@ module Zugpferd
         cmd << "-o"
         cmd << output_path
         cmd << ps_path
+        cmd << catalog_af_ps_path
         cmd << pdf_path
         cmd
       end

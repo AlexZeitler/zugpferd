@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
     "bug_tracker_uri"   => "https://github.com/alexzeitler/zugpferd/issues",
   }
 
-  spec.files = Dir["lib/**/*.rb"] + Dir["vendor/zugferd/**/*"] + ["bin/setup-schemas"]
+  spec.files = Dir["lib/**/*.rb"] + Dir["lib/**/*.ps"] + Dir["vendor/zugferd/**/*"] + ["bin/setup-schemas"]
   spec.require_paths = ["lib"]
 
   spec.add_dependency "nokogiri", "~> 1.16"

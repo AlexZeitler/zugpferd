@@ -1,0 +1,21 @@
+%!PS
+% Adds the Associated Files array to the Catalog for Ghostscript before 10.04.0.
+%
+% PDF/A-3 requires /AF in the Catalog for an embedded file, ISO 19005-3,
+% clause 6.8. zugferd.ps no longer adds it, because Ghostscript 10.04.0 and
+% later emit it themselves. Older versions emit nothing, so validators reject
+% the output.
+%
+% Ghostscript runs this file after zugferd.ps. Named pdfmark objects live for
+% the whole run, so {AFArray} from zugferd.ps is still defined here. The guards
+% mirror zugferd.ps: without the XML file or the ICC profile it creates no
+% {AFArray}.
+/ZUGFeRDXMLFile where {
+  pop
+  /ZUGFeRDProfile where {
+    pop
+    revision 10040 lt {
+      [ {Catalog} << /AF {AFArray} >> /PUT pdfmark
+    } if
+  } if
+} if
