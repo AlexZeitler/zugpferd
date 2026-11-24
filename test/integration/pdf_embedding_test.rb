@@ -7,13 +7,14 @@ require "tmpdir"
 class PdfEmbeddingTest < Minitest::Test
   include ValidatorHelper
   include SampleInvoice
+  include RequiredTools
 
   VENDOR_ZUGFERD = File.expand_path("../../vendor/zugferd", __dir__)
 
   def setup
-    skip "zugferd.ps not found (run bin/setup-schemas)" unless File.exist?(File.join(VENDOR_ZUGFERD, "zugferd.ps"))
-    skip "Ghostscript not available" unless ghostscript_available?
-    skip "Testsuite not available" unless testsuite_available?
+    require_tool File.exist?(File.join(VENDOR_ZUGFERD, "zugferd.ps")), "zugferd.ps not found (run bin/setup-schemas)"
+    require_tool ghostscript_available?, "Ghostscript not available"
+    require_tool testsuite_available?, "Testsuite not available"
   end
 
   def test_embed_cii_into_pdf
@@ -172,14 +173,15 @@ end
 class PdfVeraPdfValidationTest < Minitest::Test
   include ValidatorHelper
   include SampleInvoice
+  include RequiredTools
 
   VENDOR_ZUGFERD = File.expand_path("../../vendor/zugferd", __dir__)
 
   def setup
-    skip "zugferd.ps not found (run bin/setup-schemas)" unless File.exist?(File.join(VENDOR_ZUGFERD, "zugferd.ps"))
-    skip "Ghostscript not available" unless ghostscript_available?
+    require_tool File.exist?(File.join(VENDOR_ZUGFERD, "zugferd.ps")), "zugferd.ps not found (run bin/setup-schemas)"
+    require_tool ghostscript_available?, "Ghostscript not available"
     @pdf_validator = Zugpferd::Validation::PdfValidator.new(port: 8081)
-    skip "veraPDF not available (start with: docker compose up -d verapdf)" unless @pdf_validator.available?
+    require_tool @pdf_validator.available?, "veraPDF not available (start with: docker compose up -d verapdf)"
   end
 
   def test_embedded_pdf_is_pdfa3b_compliant
@@ -237,14 +239,15 @@ end
 class PdfMustangValidationTest < Minitest::Test
   include ValidatorHelper
   include SampleInvoice
+  include RequiredTools
 
   VENDOR_ZUGFERD = File.expand_path("../../vendor/zugferd", __dir__)
 
   def setup
-    skip "zugferd.ps not found (run bin/setup-schemas)" unless File.exist?(File.join(VENDOR_ZUGFERD, "zugferd.ps"))
-    skip "Ghostscript not available" unless ghostscript_available?
+    require_tool File.exist?(File.join(VENDOR_ZUGFERD, "zugferd.ps")), "zugferd.ps not found (run bin/setup-schemas)"
+    require_tool ghostscript_available?, "Ghostscript not available"
     @mustang_validator = Zugpferd::Validation::MustangValidator.new
-    skip "Mustangproject not available (build with: docker compose build mustang)" unless @mustang_validator.available?
+    require_tool @mustang_validator.available?, "Mustangproject not available (build with: docker compose build mustang)"
   end
 
   def test_embedded_pdf_passes_mustang_validation
