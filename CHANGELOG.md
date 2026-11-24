@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-11-24
+
 ### Fixed
 
 - `Zugpferd::Validation::PdfValidator` reads the response of veraPDF 1.30. `validationResult` is a list there, and the failed rules are under `details.ruleSummaries`. It no longer raises a `TypeError`, and it lists the failed rules. `available?` also returns `false` when the connection opens and then breaks
